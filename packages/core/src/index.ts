@@ -18,7 +18,7 @@ export {
   loadSkills,
   type ServerOptions,
 } from './server.js';
-export { sandboxBackend, macosProfile, type SandboxBackend } from './sandbox.js';
+export { sandboxBackend, macosProfile, bubblewrapArgs, type SandboxBackend } from './sandbox.js';
 export {
   GrantStore,
   grantPlugin,

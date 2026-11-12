@@ -123,7 +123,7 @@ To write one, see [docs/plugins.md](docs/plugins.md). A plugin is a name, its pe
 ## Requirements
 
 - Node.js 22.13 or newer, and git.
-- macOS or Linux. Third-party plugins currently need macOS.
+- macOS or Linux. Third-party plugins need an OS sandbox: `sandbox-exec` on macOS, or bubblewrap (`bwrap`) on Linux with unprivileged user namespaces allowed.
 
 ## Contributing
 

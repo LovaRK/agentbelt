@@ -11,6 +11,7 @@ import {
   grantPlugin,
   loadExternal,
   refusal,
+  bubblewrapArgs,
   sandboxBackend,
   stagePlugin,
   type Plugin,
@@ -140,4 +141,33 @@ test('fail closed: with no sandbox backend, third-party plugins are neither inst
   } finally {
     delete process.env.AGENTBELT_DISABLE_SANDBOX;
   }
+});
+
+test('CI runs the real isolation tests: a backend must exist where AGENTBELT_REQUIRE_SANDBOX=1', () => {
+  if (process.env.AGENTBELT_REQUIRE_SANDBOX !== '1') return;
+  assert.ok(sandboxBackend(), 'no working OS sandbox backend on this CI runner');
+});
+
+test('bubblewrap: empty read-only root, no network, no shell, only the named paths', () => {
+  const args = bubblewrapArgs(
+    '/usr/bin/node',
+    ['/plugins/evil'],
+    ['/lib/x86_64-linux-gnu/libc.so.6'],
+  );
+  const joined = args.join(' ');
+  for (const flag of ['--unshare-all', '--unshare-net', '--die-with-parent', '--new-session'])
+    assert.ok(args.includes(flag), flag);
+  assert.match(joined, /--cap-drop ALL/);
+  assert.match(joined, /--remount-ro \/ --chdir \/$/);
+  const binds: string[] = [];
+  for (let i = 0; i < args.length; i++) if (args[i] === '--ro-bind') binds.push(args[i + 1]);
+  // System Node: only the binary is mounted, never /usr, /usr/bin, /bin (shells) or home.
+  assert.deepEqual(binds.filter((b) => !b.endsWith('libc.so.6')).sort(), [
+    '/plugins/evil',
+    '/usr/bin/node',
+  ]);
+  assert.ok(!args.some((a) => a === '--bind' || a === '--share-net'));
+  // A Node install folder (e.g. nvm, CI tool cache) is mounted as a whole, read-only.
+  const nvm = bubblewrapArgs('/opt/node-v24/bin/node', [], []);
+  assert.ok(nvm.join(' ').includes('--ro-bind /opt/node-v24 /opt/node-v24'));
 });

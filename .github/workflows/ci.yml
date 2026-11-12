@@ -19,9 +19,18 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
+      # Linux sandbox backend: bubblewrap with unprivileged user namespaces. Ubuntu 24.04 restricts
+      # those through AppArmor, so the restriction is lifted on the (throwaway) runner.
+      - if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          bwrap --version
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
       - run: npm run format:check
       - run: npm run build
-      # On Linux there is no sandbox backend yet: the sandbox tests check fail-closed behaviour.
+      # Both runners have an OS sandbox, so the real isolation tests must run (not skip).
       - run: npm test
+        env:
+          AGENTBELT_REQUIRE_SANDBOX: '1'

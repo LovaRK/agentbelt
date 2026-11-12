@@ -36,7 +36,7 @@ Built-in (first-party) plugins run **in-process with `policy-only` isolation**. 
 
 - **Install:** with npm `--ignore-scripts`, so no `preinstall`/`postinstall`/`prepare` code runs. npm checks package integrity. The plugin's permissions come from static JSON in its `package.json`, and you approve them before anything is enabled.
 - **Pinning:** the grant is pinned to a SHA-256 hash of every installed file. Any change refuses the plugin until you grant it again.
-- **Run:** in a separate process inside an **OS sandbox**, macOS `sandbox-exec`, which denies by default:
+- **Run:** in a separate process inside an **OS sandbox** that denies by default: macOS `sandbox-exec`, or on Linux bubblewrap (`bwrap`: an empty read-only root, its own network and process namespaces, only the Node binary, its libraries and the plugin folder mounted). Either way:
   - no network;
   - no file writes;
   - no reads outside the plugin's folder and the Node runtime;
@@ -45,7 +45,8 @@ Built-in (first-party) plugins run **in-process with `policy-only` isolation**. 
 
   The plugin's only channel is the broker, which applies its permissions and the command policy to every request and audits it.
 
-- **Fail closed:** if no sandbox backend is available, third-party plugins are neither installed nor run. Today that is anything except macOS; Linux (bubblewrap) and container backends are planned.
+- **Fail closed:** if no sandbox backend is available, third-party plugins are neither installed nor run. On Linux, bubblewrap is used only after a probe run succeeds, since some distributions restrict unprivileged user namespaces (Ubuntu 24.04 does, through AppArmor); otherwise third-party plugins are refused. Windows has no backend. Container backends are planned.
+- **Testing:** the macOS backend is tested on a Mac and in CI. The Linux backend is tested only in CI (`ubuntu-latest`, with the namespace restriction lifted on the runner); it has not been run on other distributions.
 - **Caveat:** Apple deprecated `sandbox-exec`, though it still ships and enforces profiles. If it disappears or changes, agentbelt refuses third-party plugins rather than running them unsandboxed.
 
 ### Known limits
