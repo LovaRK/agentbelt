@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "One install, every AI agent: safe git, testing and workflow tools for DeepSeek Harness, Claude Code, Codex and any MCP client",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LovaRK/agentbelt.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/LovaRK/agentbelt#readme",
+  "bugs": "https://github.com/LovaRK/agentbelt/issues",
   "type": "module",
   "bin": {
     "agentbelt": "dist/cli.js"

@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 12/14 milestones (86% by evidence). Updated 2026-11-12T20:54:53.957Z.
+Verified 14/18 milestones (78% by evidence). Updated 2026-11-12T21:05:57.663Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -18,6 +18,10 @@ Verified 12/14 milestones (86% by evidence). Updated 2026-11-12T20:54:53.957Z.
 | M11 | Security hardening | VERIFIED |  | M3 | test/sandbox.test.ts on macOS: postinstall never ran; sandboxed plugin blocked from files/network/shell/secrets; tampering refused; fail-closed without sandbox. |
 | M12 | Documentation and release | IMPLEMENTED_UNVERIFIED |  | M8, M9, M10, M11 | README, SECURITY, CONTRIBUTING, docs/, CI/CodeQL/release workflows written (8456b62). CI never ran: no remote. Not published |
 | M13 | Project control system (status, resume, progress, context, model routing) | VERIFIED |  | M1 | test/project-state.test.ts 7/7 (persistence, crash recovery, 3-process concurrency + stale lock, evidence rule, context thresholds, model discovery doubles + ro |
+| M14 | Linux bubblewrap sandbox backend | IMPLEMENTED_UNVERIFIED |  |  | commit 1d8d58e; bubblewrapArgs unit test passes on macOS (sandbox.test.ts 6/6 incl. fail-closed); NOT run on Linux: no local Linux VM/container running, no remo |
+| M15 | Adapters: Cursor, VS Code, Claude Desktop, LM Studio | IMPLEMENTED_UNVERIFIED |  |  | commit a750121; test/adapters.test.ts 6/6 fixture tests; no real calls: Cursor/LM Studio not installed; VS Code/Claude Desktop installed but config change needs |
+| M16 | Optional coding-agent plugin | VERIFIED |  |  | commit 935de89; test/agent.test.ts 7/7; real local call 2026-11-12: Ollama gpt-oss-20b-16k:latest via agent_run on a demo npm repo, completed in 3 steps (read_f |
+| M17 | Opt-in scheduler and triggers | VERIFIED |  |  | commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44 |
 
 ## Details
 
@@ -78,3 +82,28 @@ Verified 12/14 milestones (86% by evidence). Updated 2026-11-12T20:54:53.957Z.
 - Files: packages/core/src/project-state.ts, packages/core/src/context.ts, packages/core/src/models.ts, packages/core/src/status.ts, packages/core/src/server.ts, packages/cli/src/cli.ts
 - Tests: npm test: 23 pass; 0 fail
 - 2026-11-12T20:54 (cli): test/project-state.test.ts 7/7 (persistence, crash recovery, 3-process concurrency + stale lock, evidence rule, context thresholds, model discovery doubles + routing, MCP tools, CLI); full regression 23/23
+
+### M14 Linux bubblewrap sandbox backend — IMPLEMENTED_UNVERIFIED
+- Done when: fails closed when bwrap missing or probe fails; real isolation tests pass on ubuntu CI
+- Files: packages/core/src/sandbox.ts, test/sandbox.test.ts, .github/workflows/ci.yml
+- Tests: test/sandbox.test.ts
+- 2026-11-12T20:56 (cli): commit 1d8d58e; bubblewrapArgs unit test passes on macOS (sandbox.test.ts 6/6 incl. fail-closed); NOT run on Linux: no local Linux VM/container running, no remote so CI has never run
+
+### M15 Adapters: Cursor, VS Code, Claude Desktop, LM Studio — IMPLEMENTED_UNVERIFIED
+- Done when: fixture tests pass; real calls only where the app is installed and approved
+- Files: packages/cli/src/adapters.ts, test/adapters.test.ts
+- Tests: test/adapters.test.ts
+- 2026-11-12T20:57 (cli): commit a750121; test/adapters.test.ts 6/6 fixture tests; no real calls: Cursor/LM Studio not installed; VS Code/Claude Desktop installed but config change needs user approval
+
+### M16 Optional coding-agent plugin — VERIFIED
+- Done when: tests pass; real call against a local model
+- Files: packages/core/src/model.ts, plugins/agent/src/index.ts, packages/cli/src/agent.ts
+- Tests: test/agent.test.ts; test/agent.test.ts
+- 2026-11-12T21:02 (cli): commit 935de89; test/agent.test.ts 7/7 (scripted model + fake fetch); full suite 38 tests, 37 pass before guard fixture fix, guard+agent 9/9 after; no real model call yet
+- 2026-11-12T21:03 (cli): commit 935de89; test/agent.test.ts 7/7; real local call 2026-11-12: Ollama gpt-oss-20b-16k:latest via agent_run on a demo npm repo, completed in 3 steps (read_file, run_checks), correct PASS report, 16.7s, 3 kind=model audit entries. DeepSeek API endpoint not exercised (needs a key).
+
+### M17 Opt-in scheduler and triggers — VERIFIED
+- Done when: tests pass; real workflow runs through broker+audit
+- Files: packages/core/src/scheduler.ts, packages/cli/src/scheduler-cli.ts
+- Tests: test/scheduler.test.ts
+- 2026-11-12T21:05 (cli): commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44

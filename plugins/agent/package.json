@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "agentbelt optional coding agent: a local or remote OpenAI-compatible model working through the broker",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LovaRK/agentbelt.git",
+    "directory": "plugins/agent"
+  },
+  "homepage": "https://github.com/LovaRK/agentbelt#readme",
+  "bugs": "https://github.com/LovaRK/agentbelt/issues",
   "type": "module",
   "exports": {
     ".": {

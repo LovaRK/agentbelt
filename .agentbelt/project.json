@@ -253,6 +253,98 @@
         "npm test: 23 pass",
         "0 fail"
       ]
+    },
+    {
+      "id": "M14",
+      "title": "Linux bubblewrap sandbox backend",
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "criteria": "fails closed when bwrap missing or probe fails; real isolation tests pass on ubuntu CI",
+      "evidence": [
+        {
+          "at": "2026-11-12T20:56:46.921Z",
+          "text": "commit 1d8d58e; bubblewrapArgs unit test passes on macOS (sandbox.test.ts 6/6 incl. fail-closed); NOT run on Linux: no local Linux VM/container running, no remote so CI has never run",
+          "by": "cli"
+        }
+      ],
+      "updatedAt": "2026-11-12T20:56:46.922Z",
+      "files": [
+        "packages/core/src/sandbox.ts",
+        "test/sandbox.test.ts",
+        ".github/workflows/ci.yml"
+      ],
+      "tests": [
+        "test/sandbox.test.ts"
+      ]
+    },
+    {
+      "id": "M15",
+      "title": "Adapters: Cursor, VS Code, Claude Desktop, LM Studio",
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "criteria": "fixture tests pass; real calls only where the app is installed and approved",
+      "evidence": [
+        {
+          "at": "2026-11-12T20:57:42.070Z",
+          "text": "commit a750121; test/adapters.test.ts 6/6 fixture tests; no real calls: Cursor/LM Studio not installed; VS Code/Claude Desktop installed but config change needs user approval",
+          "by": "cli"
+        }
+      ],
+      "updatedAt": "2026-11-12T20:57:42.070Z",
+      "files": [
+        "packages/cli/src/adapters.ts",
+        "test/adapters.test.ts"
+      ],
+      "tests": [
+        "test/adapters.test.ts"
+      ]
+    },
+    {
+      "id": "M16",
+      "title": "Optional coding-agent plugin",
+      "status": "VERIFIED",
+      "criteria": "tests pass; real call against a local model",
+      "evidence": [
+        {
+          "at": "2026-11-12T21:02:28.567Z",
+          "text": "commit 935de89; test/agent.test.ts 7/7 (scripted model + fake fetch); full suite 38 tests, 37 pass before guard fixture fix, guard+agent 9/9 after; no real model call yet",
+          "by": "cli"
+        },
+        {
+          "at": "2026-11-12T21:03:12.545Z",
+          "text": "commit 935de89; test/agent.test.ts 7/7; real local call 2026-11-12: Ollama gpt-oss-20b-16k:latest via agent_run on a demo npm repo, completed in 3 steps (read_file, run_checks), correct PASS report, 16.7s, 3 kind=model audit entries. DeepSeek API endpoint not exercised (needs a key).",
+          "by": "cli"
+        }
+      ],
+      "updatedAt": "2026-11-12T21:03:12.545Z",
+      "files": [
+        "packages/core/src/model.ts",
+        "plugins/agent/src/index.ts",
+        "packages/cli/src/agent.ts"
+      ],
+      "tests": [
+        "test/agent.test.ts",
+        "test/agent.test.ts"
+      ]
+    },
+    {
+      "id": "M17",
+      "title": "Opt-in scheduler and triggers",
+      "status": "VERIFIED",
+      "criteria": "tests pass; real workflow runs through broker+audit",
+      "evidence": [
+        {
+          "at": "2026-11-12T21:05:57.663Z",
+          "text": "commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44",
+          "by": "cli"
+        }
+      ],
+      "updatedAt": "2026-11-12T21:05:57.663Z",
+      "files": [
+        "packages/core/src/scheduler.ts",
+        "packages/cli/src/scheduler-cli.ts"
+      ],
+      "tests": [
+        "test/scheduler.test.ts"
+      ]
     }
   ],
   "decisions": [
@@ -307,8 +399,8 @@
     }
   ],
   "current": {
-    "item": "M10",
-    "next": "M12",
+    "item": "M15",
+    "next": "M10",
     "note": "Verify DeepSeek: user sends the test prompt; check .agentbelt/audit.jsonl in the demo project for a non-claude/codex client"
   },
   "checkpoints": [
@@ -318,6 +410,6 @@
       "commit": "faf725d"
     }
   ],
-  "updatedAt": "2026-11-12T20:54:53.957Z",
+  "updatedAt": "2026-11-12T21:05:57.663Z",
   "version": "0.1.0"
 }

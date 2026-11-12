@@ -543,7 +543,7 @@ async function main() {
       const to = flag('--to') ?? (flag('--from') ? undefined : await latestVersion());
       if (to && to === activeVersion() && !has('--reinstall')) return say(`✓ already on ${to}`);
       say(
-        `Update ${activeVersion() ?? '(none)'} → ${to ?? 'local packages'}. Release notes: https://github.com/agentbelt/agentbelt/releases`,
+        `Update ${activeVersion() ?? '(none)'} → ${to ?? 'local packages'}. Release notes: https://github.com/LovaRK/agentbelt/releases`,
       );
       if (
         !(await confirm(
