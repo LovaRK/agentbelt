@@ -221,9 +221,14 @@
           "at": "2026-11-12T20:54:01.894Z",
           "text": "README, SECURITY, CONTRIBUTING, docs/, CI/CodeQL/release workflows written (8456b62). CI never ran: no remote. Not published",
           "by": "cli"
+        },
+        {
+          "at": "2026-11-12T21:25:13.756Z",
+          "text": "Public repo github.com/LovaRK/agentbelt; CI green on ubuntu+macOS x Node 22/24 (https://github.com/LovaRK/agentbelt/actions/runs/43308961942); CodeQL green. Remaining: npm publish (needs user's NPM_TOKEN [REDACTED] + npm org).",
+          "by": "cli"
         }
       ],
-      "updatedAt": "2026-11-12T20:54:01.895Z"
+      "updatedAt": "2026-11-12T21:25:13.757Z"
     },
     {
       "id": "M13",
@@ -257,22 +262,28 @@
     {
       "id": "M14",
       "title": "Linux bubblewrap sandbox backend",
-      "status": "IMPLEMENTED_UNVERIFIED",
+      "status": "VERIFIED",
       "criteria": "fails closed when bwrap missing or probe fails; real isolation tests pass on ubuntu CI",
       "evidence": [
         {
           "at": "2026-11-12T20:56:46.921Z",
           "text": "commit 1d8d58e; bubblewrapArgs unit test passes on macOS (sandbox.test.ts 6/6 incl. fail-closed); NOT run on Linux: no local Linux VM/container running, no remote so CI has never run",
           "by": "cli"
+        },
+        {
+          "at": "2026-11-12T21:25:13.596Z",
+          "text": "GitHub CI run https://github.com/LovaRK/agentbelt/actions/runs/43308961942 (commit 5b701db): ubuntu-latest Node 22+24 with AGENTBELT_REQUIRE_SANDBOX=1, bubblewrap backend active; malicious-plugin test blocked file read/write, shell, network, secrets. Not run on other distributions.",
+          "by": "cli"
         }
       ],
-      "updatedAt": "2026-11-12T20:56:46.922Z",
+      "updatedAt": "2026-11-12T21:25:13.596Z",
       "files": [
         "packages/core/src/sandbox.ts",
         "test/sandbox.test.ts",
         ".github/workflows/ci.yml"
       ],
       "tests": [
+        "test/sandbox.test.ts",
         "test/sandbox.test.ts"
       ]
     },
@@ -410,6 +421,6 @@
       "commit": "faf725d"
     }
   ],
-  "updatedAt": "2026-11-12T21:05:57.663Z",
+  "updatedAt": "2026-11-12T21:25:13.757Z",
   "version": "0.1.0"
 }

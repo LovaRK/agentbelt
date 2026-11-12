@@ -3,10 +3,10 @@
 Read this first, then `.agentbelt/MASTER_PLAN.md`. Run `agentbelt resume` for live git/model facts.
 Update progress with `agentbelt progress set <id> <STATUS> --evidence "…"` (VERIFIED needs evidence).
 
-- Milestones: 14 verified, 3 implemented-unverified, 1 in progress, 0 not started, 0 blocked, 0 failed
+- Milestones: 15 verified, 2 implemented-unverified, 1 in progress, 0 not started, 0 blocked, 0 failed
 - Current: M15 Adapters: Cursor, VS Code, Claude Desktop, LM Studio (IMPLEMENTED_UNVERIFIED)
 - Interrupted (IN_PROGRESS): M10 DeepSeek integration
-- Last verified: M17 Opt-in scheduler and triggers — commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44
+- Last verified: M14 Linux bubblewrap sandbox backend — GitHub CI run https://github.com/LovaRK/agentbelt/actions/runs/43308961942 (commit 5b701db): ubuntu-latest Node 22+24 with AGENTBELT_REQUIRE_SANDBOX=1, bubblewrap backend active; malicious-plugin test blocked file read/write, shell, network, secrets. Not run on other distributions.
 - Next: M10 DeepSeek integration (done when: real MCP execution in audit log)
 - Open blockers: B1 DeepSeek verification needs the user to send one prompt in DeepSeek Harness (no headless mode used); B2 Release needs approvals: GitHub owner, commit author name, push, npm publish, Changesets install
 - Recent decisions: D3 Untrusted plugins fail closed; D4 Model-independent, local-first routing; D5 Project state

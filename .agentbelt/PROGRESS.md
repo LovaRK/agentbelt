@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 14/18 milestones (78% by evidence). Updated 2026-11-12T21:05:57.663Z.
+Verified 15/18 milestones (83% by evidence). Updated 2026-11-12T21:25:13.757Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -16,9 +16,9 @@ Verified 14/18 milestones (78% by evidence). Updated 2026-11-12T21:05:57.663Z.
 | M9 | Codex integration | VERIFIED |  | M7 | codex-cli 0.166.0 exec with -c overrides: real calls, audit client=codex-mcp-client 2026-11-12T20:05:38Z |
 | M10 | DeepSeek integration | IN_PROGRESS |  | M7 | DeepSeek Harness 0.2.2-rc.1 loaded the agentbelt entry and started the server (parent process = DeepSeek app); 0 tool calls in the audit log so far |
 | M11 | Security hardening | VERIFIED |  | M3 | test/sandbox.test.ts on macOS: postinstall never ran; sandboxed plugin blocked from files/network/shell/secrets; tampering refused; fail-closed without sandbox. |
-| M12 | Documentation and release | IMPLEMENTED_UNVERIFIED |  | M8, M9, M10, M11 | README, SECURITY, CONTRIBUTING, docs/, CI/CodeQL/release workflows written (8456b62). CI never ran: no remote. Not published |
+| M12 | Documentation and release | IMPLEMENTED_UNVERIFIED |  | M8, M9, M10, M11 | Public repo github.com/LovaRK/agentbelt; CI green on ubuntu+macOS x Node 22/24 (https://github.com/LovaRK/agentbelt/actions/runs/43308961942); CodeQL green. Rem |
 | M13 | Project control system (status, resume, progress, context, model routing) | VERIFIED |  | M1 | test/project-state.test.ts 7/7 (persistence, crash recovery, 3-process concurrency + stale lock, evidence rule, context thresholds, model discovery doubles + ro |
-| M14 | Linux bubblewrap sandbox backend | IMPLEMENTED_UNVERIFIED |  |  | commit 1d8d58e; bubblewrapArgs unit test passes on macOS (sandbox.test.ts 6/6 incl. fail-closed); NOT run on Linux: no local Linux VM/container running, no remo |
+| M14 | Linux bubblewrap sandbox backend | VERIFIED |  |  | GitHub CI run https://github.com/LovaRK/agentbelt/actions/runs/43308961942 (commit 5b701db): ubuntu-latest Node 22+24 with AGENTBELT_REQUIRE_SANDBOX=1, bubblewr |
 | M15 | Adapters: Cursor, VS Code, Claude Desktop, LM Studio | IMPLEMENTED_UNVERIFIED |  |  | commit a750121; test/adapters.test.ts 6/6 fixture tests; no real calls: Cursor/LM Studio not installed; VS Code/Claude Desktop installed but config change needs |
 | M16 | Optional coding-agent plugin | VERIFIED |  |  | commit 935de89; test/agent.test.ts 7/7; real local call 2026-11-12: Ollama gpt-oss-20b-16k:latest via agent_run on a demo npm repo, completed in 3 steps (read_f |
 | M17 | Opt-in scheduler and triggers | VERIFIED |  |  | commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44 |
@@ -76,6 +76,7 @@ Verified 14/18 milestones (78% by evidence). Updated 2026-11-12T21:05:57.663Z.
 ### M12 Documentation and release — IMPLEMENTED_UNVERIFIED
 - Done when: release checklist complete
 - 2026-11-12T20:54 (cli): README, SECURITY, CONTRIBUTING, docs/, CI/CodeQL/release workflows written (8456b62). CI never ran: no remote. Not published
+- 2026-11-12T21:25 (cli): Public repo github.com/LovaRK/agentbelt; CI green on ubuntu+macOS x Node 22/24 (https://github.com/LovaRK/agentbelt/actions/runs/43308961942); CodeQL green. Remaining: npm publish (needs user's NPM_TOKEN [REDACTED] + npm org).
 
 ### M13 Project control system (status, resume, progress, context, model routing) — VERIFIED
 - Done when: focused tests pass; status/resume work on this repo
@@ -83,11 +84,12 @@ Verified 14/18 milestones (78% by evidence). Updated 2026-11-12T21:05:57.663Z.
 - Tests: npm test: 23 pass; 0 fail
 - 2026-11-12T20:54 (cli): test/project-state.test.ts 7/7 (persistence, crash recovery, 3-process concurrency + stale lock, evidence rule, context thresholds, model discovery doubles + routing, MCP tools, CLI); full regression 23/23
 
-### M14 Linux bubblewrap sandbox backend — IMPLEMENTED_UNVERIFIED
+### M14 Linux bubblewrap sandbox backend — VERIFIED
 - Done when: fails closed when bwrap missing or probe fails; real isolation tests pass on ubuntu CI
 - Files: packages/core/src/sandbox.ts, test/sandbox.test.ts, .github/workflows/ci.yml
-- Tests: test/sandbox.test.ts
+- Tests: test/sandbox.test.ts; test/sandbox.test.ts
 - 2026-11-12T20:56 (cli): commit 1d8d58e; bubblewrapArgs unit test passes on macOS (sandbox.test.ts 6/6 incl. fail-closed); NOT run on Linux: no local Linux VM/container running, no remote so CI has never run
+- 2026-11-12T21:25 (cli): GitHub CI run https://github.com/LovaRK/agentbelt/actions/runs/43308961942 (commit 5b701db): ubuntu-latest Node 22+24 with AGENTBELT_REQUIRE_SANDBOX=1, bubblewrap backend active; malicious-plugin test blocked file read/write, shell, network, secrets. Not run on other distributions.
 
 ### M15 Adapters: Cursor, VS Code, Claude Desktop, LM Studio — IMPLEMENTED_UNVERIFIED
 - Done when: fixture tests pass; real calls only where the app is installed and approved
