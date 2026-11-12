@@ -13,6 +13,8 @@ import { AuditLog, type Isolation } from './audit.js';
 import { BrokerDenied, createContext } from './broker.js';
 import { toolId, type Plugin, type ToolDefinition, type ToolResult } from './plugin.js';
 import { redact } from './redact.js';
+import { ProjectState, STATUSES, type Status } from './project-state.js';
+import { resumeReport, statusReport } from './status.js';
 
 export interface ServerOptions {
   version: string;
@@ -47,7 +49,10 @@ export function checkWorkspace(dir: string): string | null {
   // An app's own settings folder (e.g. ~/.dsh/profiles/desktop, where DeepSeek Harness starts
   // servers) is never a project, even though it is neither / nor home.
   const inHome = full.startsWith(home + sep) ? full.slice(home.length + 1) : null;
-  if (inHome && (inHome.startsWith('.') || inHome === 'Library' || inHome.startsWith(`Library${sep}`)))
+  if (
+    inHome &&
+    (inHome.startsWith('.') || inHome === 'Library' || inHome.startsWith(`Library${sep}`))
+  )
     return `refusing to use ${full} as the workspace: it is an app settings folder, not a project (pass --workspace)`;
   return null;
 }
@@ -214,6 +219,92 @@ export function createAgentbeltServer(options: ServerOptions) {
       ];
       return { content: [{ type: 'text' as const, text: lines.join('\n') }] };
     },
+  );
+
+  // Project state tools: read status/handoff; update progress with evidence rules.
+  const text = (t: string, isError = false) => ({
+    content: [{ type: 'text' as const, text: t }],
+    isError,
+  });
+  const withWorkspace = async <T>(fn: (ws: string) => T) => {
+    try {
+      return fn(await resolveWorkspace());
+    } catch (error) {
+      return text((error as Error).message, true);
+    }
+  };
+  server.registerTool(
+    'project_get_status',
+    {
+      description:
+        "This project's persisted status: milestones, current and next task, blockers, last checkpoint, context and local models. Read it at the start of a session.",
+      inputSchema: z.object({}),
+      annotations: { readOnlyHint: true },
+    },
+    async () => withWorkspace((ws) => text(statusReport(ws, options.version))),
+  );
+  server.registerTool(
+    'project_get_handoff',
+    {
+      description:
+        'A compact handoff for resuming work: interrupted tasks, last verified step, next task, blockers, git state.',
+      inputSchema: z.object({}),
+      annotations: { readOnlyHint: true },
+    },
+    async () => withWorkspace((ws) => text(resumeReport(ws))),
+  );
+  server.registerTool(
+    'project_update_task',
+    {
+      description:
+        'Updates a milestone/task status with evidence after you complete a step. VERIFIED requires an auditRef: ' +
+        'the timestamp ("ts") of a successful agentbelt tool call in .agentbelt/audit.jsonl that proves it (e.g. a passing testing_run_checks).',
+      inputSchema: z.object({
+        id: z.string().regex(/^M\d{1,3}(\.\d{1,3})?$/),
+        status: z.enum(STATUSES),
+        evidence: z.string().min(3).max(1000),
+        auditRef: z.string().max(40).optional(),
+        files: z.array(z.string().max(300)).max(50).optional(),
+        tests: z.array(z.string().max(300)).max(20).optional(),
+        title: z.string().max(200).optional().describe('Only for creating a new task id'),
+      }),
+    },
+    async (a: {
+      id: string;
+      status: Status;
+      evidence: string;
+      auditRef?: string;
+      files?: string[];
+      tests?: string[];
+      title?: string;
+    }) =>
+      withWorkspace((ws) => {
+        audit ??= new AuditLog(ws, client);
+        let evidence = a.evidence;
+        if (a.status === 'VERIFIED') {
+          const proof = audit
+            .tail(5000)
+            .find((e) => e.ts === a.auditRef && e.kind === 'tool' && e.ok);
+          if (!proof)
+            return text(
+              'VERIFIED needs auditRef = the "ts" of a successful agentbelt tool call in .agentbelt/audit.jsonl. Use IMPLEMENTED_UNVERIFIED otherwise.',
+              true,
+            );
+          evidence = `${a.evidence} [audit ${proof.ts} ${proof.tool} by ${proof.client}]`;
+        }
+        const ps = new ProjectState(ws);
+        if (a.title && !ps.load().items.some((i) => i.id === a.id))
+          ps.upsert({ id: a.id, title: a.title }, client());
+        ps.setStatus(a.id, a.status, { evidence, files: a.files, tests: a.tests, by: client() });
+        audit.write({
+          kind: 'tool',
+          plugin: 'project',
+          tool: 'project_update_task',
+          detail: `${a.id} → ${a.status}`,
+          ok: true,
+        });
+        return text(`${a.id} is now ${a.status}.\n\n${statusReport(ws, options.version)}`);
+      }),
   );
 
   for (const skill of loadSkills(options.skillsDirs ?? []))

@@ -1,5 +1,14 @@
 node_modules/
 dist/
 *.tsbuildinfo
-.agentbelt/
+.agentbelt/*
+# Project plan and progress are shared through git; logs, history and locks stay local.
+!.agentbelt/MASTER_PLAN.md
+!.agentbelt/PROGRESS.md
+!.agentbelt/CURRENT_STATE.md
+!.agentbelt/DECISIONS.md
+!.agentbelt/BLOCKERS.md
+!.agentbelt/HANDOFF.md
+!.agentbelt/project.json
+!.agentbelt/MODEL_REGISTRY.json
 *.tgz

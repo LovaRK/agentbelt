@@ -1,0 +1,115 @@
+{
+  "discoveredAt": "2026-11-12T20:53:16.404Z",
+  "memoryGB": 26,
+  "providers": {
+    "ollama": "available",
+    "lmstudio": "not running"
+  },
+  "models": [
+    {
+      "name": "gpt-oss-20b-32k:latest",
+      "provider": "ollama",
+      "sizeGB": 13,
+      "running": false,
+      "maxContext": 131072,
+      "configuredContext": 32768,
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "fitsInMemory": true
+    },
+    {
+      "name": "gpt-oss-20b-16k:latest",
+      "provider": "ollama",
+      "sizeGB": 13,
+      "running": false,
+      "maxContext": 131072,
+      "configuredContext": 16384,
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "fitsInMemory": true
+    },
+    {
+      "name": "gpt-oss:20b",
+      "provider": "ollama",
+      "sizeGB": 13,
+      "running": false,
+      "maxContext": 131072,
+      "configuredContext": null,
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "fitsInMemory": true
+    },
+    {
+      "name": "qwen3.8:27b",
+      "provider": "ollama",
+      "sizeGB": 18,
+      "running": false,
+      "maxContext": 262144,
+      "configuredContext": null,
+      "capabilities": [
+        "completion",
+        "vision",
+        "tools",
+        "thinking"
+      ],
+      "fitsInMemory": true
+    },
+    {
+      "name": "gemma4:12b-mlx",
+      "provider": "ollama",
+      "sizeGB": 7.7,
+      "running": false,
+      "maxContext": 262144,
+      "configuredContext": null,
+      "capabilities": [
+        "completion",
+        "vision",
+        "audio",
+        "tools",
+        "thinking"
+      ],
+      "fitsInMemory": true
+    },
+    {
+      "name": "nemotron-mini:4b-instruct-q5_K_M",
+      "provider": "ollama",
+      "sizeGB": 3.1,
+      "running": false,
+      "maxContext": 4096,
+      "configuredContext": null,
+      "capabilities": [
+        "completion",
+        "tools"
+      ],
+      "fitsInMemory": true
+    },
+    {
+      "name": "gemma2:9b",
+      "provider": "ollama",
+      "sizeGB": 5.4,
+      "running": false,
+      "maxContext": 8192,
+      "configuredContext": null,
+      "capabilities": [
+        "completion"
+      ],
+      "fitsInMemory": true
+    }
+  ],
+  "priority": [
+    "gpt-oss-20b-16k:latest",
+    "gpt-oss-20b-32k:latest",
+    "gpt-oss:20b",
+    "qwen3.8:27b",
+    "gemma4:12b-mlx"
+  ]
+}
