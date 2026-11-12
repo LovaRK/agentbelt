@@ -5,7 +5,7 @@
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { basename, delimiter, join } from 'node:path';
+import { basename, delimiter, dirname, join } from 'node:path';
 import { backupsDir } from './paths.js';
 
 export interface Entry {
@@ -14,7 +14,7 @@ export interface Entry {
 }
 
 export interface ClientAdapter {
-  id: 'deepseek' | 'claude-code' | 'codex';
+  id: 'deepseek' | 'claude-code' | 'codex' | 'cursor' | 'vscode' | 'claude-desktop' | 'lm-studio';
   label: string;
   /** The app gives MCP servers neither roots nor the project as cwd, so `--workspace` is required. */
   needsWorkspace?: boolean;
@@ -152,8 +152,151 @@ export function codex(home = homedir()): ClientAdapter {
   };
 }
 
+// ------------------------------------------------ apps configured by a JSON file
+
+/** Per-user application settings folder (macOS, Linux, Windows). */
+export function appSupport(home = homedir()): string {
+  if (process.platform === 'darwin') return join(home, 'Library', 'Application Support');
+  if (process.platform === 'win32') return process.env.APPDATA ?? join(home, 'AppData', 'Roaming');
+  return process.env.XDG_CONFIG_HOME ?? join(home, '.config');
+}
+
+interface JsonAppOptions {
+  id: ClientAdapter['id'];
+  label: string;
+  file: string;
+  /** The object holding server entries: `mcpServers` for most apps, `servers` for VS Code. */
+  key: 'mcpServers' | 'servers';
+  detect(): boolean;
+  needsWorkspace?: boolean;
+  /** What the app needs to pick the change up. */
+  reload: string;
+  shape(e: Entry): Record<string, unknown>;
+}
+
+/**
+ * Adds or removes `agentbelt` under one key of a JSON config file, keeping everything else. A file
+ * that is not plain JSON (for example with comments) is never rewritten: the user is told what to
+ * add by hand instead.
+ */
+function jsonApp(o: JsonAppOptions): ClientAdapter {
+  const read = (): Record<string, any> => {
+    if (!existsSync(o.file)) return {};
+    const text = readFileSync(o.file, 'utf8');
+    if (!text.trim()) return {};
+    try {
+      const value = JSON.parse(text);
+      if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+    } catch {
+      // fall through
+    }
+    throw new Error(
+      `${o.file} is not plain JSON (comments or trailing commas?), so it was not changed. ` +
+        `Add this under "${o.key}" by hand: "agentbelt": ${JSON.stringify(o.shape({ command: '<agentbelt>', args: ['serve'] }))}`,
+    );
+  };
+  const write = (value: Record<string, any>) => {
+    mkdirSync(dirname(o.file), { recursive: true });
+    writeFileSync(o.file, `${JSON.stringify(value, null, 2)}\n`);
+  };
+  return {
+    id: o.id,
+    label: o.label,
+    needsWorkspace: o.needsWorkspace,
+    detect: o.detect,
+    configFile: () => o.file,
+    isInstalled: () => {
+      try {
+        return !!read()[o.key]?.agentbelt;
+      } catch {
+        return false;
+      }
+    },
+    describe: (e) =>
+      `set "${o.key}.agentbelt" in ${o.file} to ${JSON.stringify(o.shape(e))} (${o.reload})`,
+    add(e) {
+      const value = read();
+      const servers = value[o.key] && typeof value[o.key] === 'object' ? value[o.key] : {};
+      value[o.key] = { ...servers, agentbelt: o.shape(e) };
+      write(value);
+    },
+    remove() {
+      if (!existsSync(o.file)) return;
+      const value = read();
+      if (!value[o.key]?.agentbelt) return;
+      delete value[o.key].agentbelt;
+      write(value);
+    },
+  };
+}
+
+/** Cursor: ~/.cursor/mcp.json. Cursor substitutes ${workspaceFolder}, so the open project is used. */
+export function cursor(home = homedir()): ClientAdapter {
+  return jsonApp({
+    id: 'cursor',
+    label: 'Cursor',
+    file: join(home, '.cursor', 'mcp.json'),
+    key: 'mcpServers',
+    detect: () => existsSync(join(home, '.cursor')) || existsSync('/Applications/Cursor.app'),
+    reload: 'Cursor picks it up in Settings → MCP',
+    shape: (e) => ({
+      command: e.command,
+      args: e.args.includes('--workspace')
+        ? e.args
+        : [...e.args, '--workspace', '${workspaceFolder}'],
+    }),
+  });
+}
+
+/** VS Code (Copilot agent mode): user-level mcp.json. VS Code sends workspace folders as roots. */
+export function vscode(home = homedir()): ClientAdapter {
+  const dir = join(appSupport(home), 'Code', 'User');
+  return jsonApp({
+    id: 'vscode',
+    label: 'VS Code',
+    file: join(dir, 'mcp.json'),
+    key: 'servers',
+    detect: () => existsSync(dir),
+    reload: 'VS Code reloads it automatically',
+    shape: (e) => ({ type: 'stdio', command: e.command, args: e.args }),
+  });
+}
+
+/** Claude Desktop: claude_desktop_config.json. It gives no project, so --workspace is required. */
+export function claudeDesktop(home = homedir()): ClientAdapter {
+  const dir = join(appSupport(home), 'Claude');
+  return jsonApp({
+    id: 'claude-desktop',
+    label: 'Claude Desktop',
+    file: join(dir, 'claude_desktop_config.json'),
+    key: 'mcpServers',
+    needsWorkspace: true,
+    detect: () => existsSync(dir),
+    reload: 'restart Claude Desktop to load it',
+    shape: (e) => ({ command: e.command, args: e.args }),
+  });
+}
+
+/** LM Studio: ~/.lmstudio/mcp.json. It gives no project, so --workspace is required. */
+export function lmStudio(home = homedir()): ClientAdapter {
+  return jsonApp({
+    id: 'lm-studio',
+    label: 'LM Studio',
+    file: join(home, '.lmstudio', 'mcp.json'),
+    key: 'mcpServers',
+    needsWorkspace: true,
+    detect: () => existsSync(join(home, '.lmstudio')),
+    reload: 'LM Studio reloads it automatically',
+    shape: (e) => ({ command: e.command, args: e.args }),
+  });
+}
+
 export const allAdapters = (home = homedir()): ClientAdapter[] => [
   deepseek(home),
   claudeCode(home),
   codex(home),
+  cursor(home),
+  vscode(home),
+  claudeDesktop(home),
+  lmStudio(home),
 ];

@@ -10,5 +10,11 @@ A successful connection alone doesn't count.
 | Codex            | codex-cli 0.166.0 | 2026-11-12 | same as above                                                                                           | ✅      | Codex asks before calling MCP tools that aren't read-only. Headless runs need `mcp_servers.agentbelt.default_tools_approval_mode="approve"` |
 | DeepSeek Harness | 0.2.2-rc.1        | —          | —                                                                                                       | pending | connects through `@deepseek-ai/dsh-mcp-client`                                                                                              |
 
+Config only (fixture-tested, no real call yet): Cursor and LM Studio (not installed on the test
+Mac), VS Code and Claude Desktop (installed; a real call needs your approval to change their
+config). Claude Desktop, LM Studio and DeepSeek Harness give MCP servers no project folder, so
+`setup` needs `--workspace <project>` for them; VS Code sends MCP roots; Cursor substitutes
+`${workspaceFolder}`.
+
 Server: official MCP TypeScript SDK `@modelcontextprotocol/server` 2.4.0. It negotiates protocol
 versions 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05 and 2024-10-07.

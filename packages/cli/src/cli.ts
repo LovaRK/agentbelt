@@ -126,7 +126,9 @@ async function connectClients(): Promise<void> {
   const entry = base;
   const found = selectedAdapters().filter((a) => a.detect());
   if (!found.length) {
-    say('No supported AI apps found (DeepSeek Harness, Claude Code, Codex). You can still add');
+    say(
+      'No supported AI apps found (DeepSeek Harness, Claude Code, Codex, Cursor, VS Code, Claude Desktop, LM Studio). You can still add',
+    );
     say(`this server to any MCP client: command ${entry.command}, args ["serve"].`);
     return;
   }
@@ -432,8 +434,8 @@ async function modelsCommand(): Promise<void> {
 
 const HELP = `agentbelt ${VERSION} — safe git, testing and workflow tools for any MCP client
 
-  setup [--yes] [--clients deepseek,claude-code,codex] [--from <dir-with-.tgz>]
-        [--workspace <dir>]   (needed for DeepSeek Harness, which gives no project)
+  setup [--yes] [--clients deepseek,claude-code,codex,cursor,vscode,claude-desktop,lm-studio] [--from <dir-with-.tgz>]
+        [--workspace <dir>]   (needed for DeepSeek Harness, Claude Desktop, LM Studio)
                      install a verified copy and connect your AI apps
   doctor             check the install and make real tool calls through it
   update [--to <version>] [--from <dir>]
