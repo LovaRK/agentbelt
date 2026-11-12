@@ -1,0 +1,27 @@
+# Publishes to npm with provenance when a version tag is pushed. Requires the NPM_TOKEN secret
+# and a maintainer pushing the tag; nothing publishes automatically from main.
+name: release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npm test
+      - run: |
+          for w in packages/core plugins/git plugins/testing plugins/workflows packages/cli; do
+            (cd "$w" && npm publish --provenance --access public)
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
