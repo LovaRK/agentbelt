@@ -28,6 +28,8 @@ export interface ServerOptions {
   isolation?: Isolation;
   /** Lines shown by agentbelt_status, e.g. third-party plugins that were refused and why. */
   notices?: string[];
+  /** Audit client name for calls that do not come from an MCP client (e.g. the scheduler). */
+  clientName?: string;
   /** The model for the optional coding agent (from `agentbelt agent setup`). */
   model?: ModelClient | null;
 }
@@ -101,7 +103,7 @@ export function createAgentbeltServer(options: ServerOptions) {
         'workspace and the installed plugins.',
     },
   );
-  const client = () => server.server.getClientVersion()?.name ?? 'unknown';
+  const client = () => server.server.getClientVersion()?.name ?? options.clientName ?? 'unknown';
   const tools = new Map<string, { plugin: Plugin; tool: ToolDefinition }>();
   let workspace: string | null = options.workspace ? resolve(options.workspace) : null;
   let audit: AuditLog | null = null;

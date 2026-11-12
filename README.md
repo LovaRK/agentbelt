@@ -114,6 +114,11 @@ A workflow is JSON: steps call tools, and `approval` steps wait for you.
 
 Put your own workflows in `<project>/.agentbelt/workflows/*.json`. Workflows run only when you (or your AI app at your request) start them. agentbelt v0.1 has no background scheduler or triggers.
 
+## Optional extras (off by default)
+
+- **Coding agent:** `agentbelt agent setup --provider local --model <name>` (or `--provider deepseek`, or `custom --base-url …`). Your AI app can then hand a task to that model with `agent_run`. The key goes to the OS keychain. Verified with a local Ollama model (gpt-oss 20B); the DeepSeek API path is tested with a fake endpoint only.
+- **Scheduler and triggers:** `agentbelt schedule add repo-health --cron "0 9 * * 1-5"`, `agentbelt trigger add repo-health --on git --branch main`, then keep `agentbelt scheduler run` going. Only file and git triggers; nothing runs unless you start the scheduler.
+
 ## Plugins
 
 ```bash

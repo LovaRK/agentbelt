@@ -53,6 +53,7 @@ import {
 } from './paths.js';
 import { FIRST_PARTY } from './plugins.js';
 import { agentCommand, loadAgent } from './agent.js';
+import { scheduleCommand } from './scheduler-cli.js';
 
 const VERSION: string = JSON.parse(
   readFileSync(join(packageDir(), 'package.json'), 'utf8'),
@@ -445,6 +446,11 @@ const HELP = `agentbelt ${VERSION} — safe git, testing and workflow tools for 
   uninstall [--yes]  remove agentbelt from your AI apps (config backups are kept)
   agent setup [--provider local|deepseek|custom] [--model <m>] [--base-url <url>] [--allow-remote] [--key]
   agent status | remove   optional coding agent (agent_run tool); API keys go to the OS keychain
+  schedule add <workflow> --cron "<m h dom mon dow>" | --at <ISO time>
+  trigger add <workflow> --on file --paths "src/**,*.json" | --on git [--branch main] [--cooldown <sec>]
+  schedule|trigger list | remove <id> | enable <id> | disable <id>
+  scheduler run [--once] [--interval <sec>]
+                     opt-in: runs due schedules/triggers while this command runs (Ctrl-C stops)
   serve [--workspace <dir>]   the MCP server (what your apps run)
   plugin list | add <npm-package|file.tgz> | remove <name>
                      third-party plugins: install scripts disabled, run only in an OS sandbox
@@ -512,6 +518,16 @@ async function main() {
       return modelsCommand();
     case 'agent':
       return agentCommand(args, { flag, has, say, confirm });
+    case 'schedule':
+    case 'trigger':
+    case 'scheduler':
+      return scheduleCommand(
+        command,
+        args,
+        projectRoot(flag('--workspace') ?? process.cwd()),
+        VERSION,
+        { flag, has, say, out },
+      );
     case 'setup':
       say(`agentbelt ${VERSION} setup\n`);
       await installStep();

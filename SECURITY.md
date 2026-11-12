@@ -49,6 +49,19 @@ Built-in (first-party) plugins run **in-process with `policy-only` isolation**. 
 - **Testing:** the macOS backend is tested on a Mac and in CI. The Linux backend is tested only in CI (`ubuntu-latest`, with the namespace restriction lifted on the runner); it has not been run on other distributions.
 - **Caveat:** Apple deprecated `sandbox-exec`, though it still ships and enforces profiles. If it disappears or changes, agentbelt refuses third-party plugins rather than running them unsandboxed.
 
+### Optional coding agent (`agent_run`)
+
+- Off unless the user runs `agentbelt agent setup`. The endpoint and model are chosen there and stored in agentbelt's own config (mode 600), which plugins cannot write.
+- Loopback endpoints only, unless the user picks the DeepSeek API or passes `--allow-remote`. Remote endpoints must use https. Redirects and credentials in the URL are refused.
+- The API key is kept in the OS keychain (macOS `security`, Linux `secret-tool`) and typed at the keychain's own prompt. The core adds it to each request; plugin code never sees it, and it is never written to disk or logged.
+- The agent model acts only through broker tools (list/read files, run the checks, see the diff; write files only with `write: true`). Every model call is audited (`kind: "model"`). Files it reads are sent to the endpoint you chose.
+
+### Scheduler and triggers
+
+- Off by default. Schedules and triggers are created only with the CLI, never through MCP tools, and run only while the user keeps `agentbelt scheduler run` going in that project.
+- Each run is a normal `workflows_start` call through the broker, audited as client `agentbelt-scheduler`. Approval gates still wait for the user.
+- Only local triggers: file changes and new commits on a branch, both polled. Webhook and GitHub triggers are not offered, since they would need a network listener or remote access. Event values are cleaned and clipped, and only inputs the workflow declares are passed.
+
 ### Known limits
 
 - Redaction is pattern-based. It reduces accidental leaks; it is not a guarantee.
