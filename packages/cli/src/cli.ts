@@ -108,14 +108,24 @@ function readdirTgz(dir: string): string[] {
 }
 
 async function connectClients(): Promise<void> {
-  const entry = { command: shimPath(), args: ['serve'] };
+  const base = { command: shimPath(), args: ['serve'] };
+  const entry = base;
   const found = selectedAdapters().filter((a) => a.detect());
   if (!found.length) {
     say('No supported AI apps found (DeepSeek Harness, Claude Code, Codex). You can still add');
     say(`this server to any MCP client: command ${entry.command}, args ["serve"].`);
     return;
   }
+  const workspace = flag('--workspace');
   for (const a of found) {
+    if (a.needsWorkspace && !workspace) {
+      say(`• ${a.label}: skipped — it does not tell servers which project is open.`);
+      say(`  Re-run with --workspace <project-dir> to connect it to one project.`);
+      continue;
+    }
+    const entry = a.needsWorkspace
+      ? { ...base, args: ['serve', '--workspace', resolve(workspace!)] }
+      : base;
     if (a.isInstalled() && !has('--reconnect')) {
       say(`✓ ${a.label}: already connected`);
       continue;
@@ -239,6 +249,7 @@ async function pluginCommand(): Promise<void> {
 const HELP = `agentbelt ${VERSION} — safe git, testing and workflow tools for any MCP client
 
   setup [--yes] [--clients deepseek,claude-code,codex] [--from <dir-with-.tgz>]
+        [--workspace <dir>]   (needed for DeepSeek Harness, which gives no project)
                      install a verified copy and connect your AI apps
   doctor             check the install and make real tool calls through it
   update [--to <version>] [--from <dir>]

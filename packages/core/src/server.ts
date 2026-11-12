@@ -4,7 +4,7 @@
 // current directory's git repository. It refuses to work on the home directory or /.
 import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { McpServer } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
@@ -41,8 +41,14 @@ export function projectRoot(dir: string): string {
 export function checkWorkspace(dir: string): string | null {
   const full = resolve(dir);
   if (!existsSync(full) || !statSync(full).isDirectory()) return `workspace ${full} does not exist`;
-  if (full === resolve(homedir()) || full === '/')
+  const home = resolve(homedir());
+  if (full === home || full === '/')
     return `refusing to use ${full} as the workspace; open a project folder (or pass --workspace)`;
+  // An app's own settings folder (e.g. ~/.dsh/profiles/desktop, where DeepSeek Harness starts
+  // servers) is never a project, even though it is neither / nor home.
+  const inHome = full.startsWith(home + sep) ? full.slice(home.length + 1) : null;
+  if (inHome && (inHome.startsWith('.') || inHome === 'Library' || inHome.startsWith(`Library${sep}`)))
+    return `refusing to use ${full} as the workspace: it is an app settings folder, not a project (pass --workspace)`;
   return null;
 }
 

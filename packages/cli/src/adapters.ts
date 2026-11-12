@@ -16,6 +16,8 @@ export interface Entry {
 export interface ClientAdapter {
   id: 'deepseek' | 'claude-code' | 'codex';
   label: string;
+  /** The app gives MCP servers neither roots nor the project as cwd, so `--workspace` is required. */
+  needsWorkspace?: boolean;
   detect(): boolean;
   /** The file that changes (backed up first), if any. */
   configFile(): string | null;
@@ -71,6 +73,8 @@ export function deepseek(home = homedir()): ClientAdapter {
   return {
     id: 'deepseek',
     label: 'DeepSeek Harness',
+    // Its MCP client advertises no roots and starts servers in ~/.dsh/profiles/desktop.
+    needsWorkspace: true,
     detect: () => existsSync(join(home, '.dsh', 'profiles', 'desktop')),
     configFile: () => file,
     isInstalled: () => read().includes(BEGIN),

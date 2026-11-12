@@ -100,7 +100,7 @@ before(() => {
 after(() => rmSync(dir, { recursive: true, force: true }));
 
 test('setup installs a verified copy, connects all three clients, and doctor passes', () => {
-  const r = cli(['setup', '--from', pkgs('0.1.0'), '--yes']);
+  const r = cli(['setup', '--from', pkgs('0.1.0'), '--yes', '--workspace', dir]);
   assert.equal(r.code, 0, r.out);
   assert.match(r.out, /verifying 0\.1\.0 before activating/i);
   assert.match(r.out, /✓ testing_detect ok/);
@@ -114,10 +114,11 @@ test('setup installs a verified copy, connects all three clients, and doctor pas
   );
   assert.match(patch, /^# mine\n- id: x\n {2}name: y\n/); // the user's content is kept
   assert.match(patch, /serverName: agentbelt/);
+  assert.match(patch, /"serve", "--workspace", "/); // DeepSeek gives no roots, so it is pinned
   assert.match(r.out, /Claude Code: connected/);
   assert.match(r.out, /Codex: connected/);
   // Running setup again changes nothing.
-  const again = cli(['setup', '--from', pkgs('0.1.0'), '--yes']);
+  const again = cli(['setup', '--from', pkgs('0.1.0'), '--yes', '--workspace', dir]);
   assert.equal(again.code, 0, again.out);
   assert.equal(
     readFileSync(
@@ -167,6 +168,7 @@ test('the DeepSeek block is replaced, not duplicated, and removal is exact', () 
   const file = join(home, '.dsh', 'profiles', 'desktop', 'cordis.patch.yml');
   writeFileSync(file, 'a: 1\n');
   const a = deepseek(home);
+  assert.equal(a.needsWorkspace, true); // no roots, cwd is the profile folder
   a.add({ command: '/x y/agentbelt', args: ['serve'] });
   a.add({ command: '/z/agentbelt', args: ['serve'] });
   const text = readFileSync(file, 'utf8');

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { homedir } from 'node:os';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as z from 'zod';
 import { checkWorkspace, createAgentbeltServer, definePlugin, ok } from '@agentbelt/core';
@@ -108,6 +108,10 @@ test('the broker enforces each permission at call time and audits denials', asyn
 test('the workspace is never the home directory or /', () => {
   assert.match(checkWorkspace(homedir())!, /refusing/);
   assert.match(checkWorkspace('/')!, /refusing/);
+  // DeepSeek Harness starts servers in its profile folder; app settings folders are refused.
+  const dsh = join(homedir(), '.dsh', 'profiles', 'desktop');
+  if (existsSync(dsh)) assert.match(checkWorkspace(dsh)!, /settings folder/);
+  assert.match(checkWorkspace(join(homedir(), 'Library'))!, /settings folder/);
   assert.equal(checkWorkspace(process.cwd()), null);
 });
 
