@@ -1,12 +1,19 @@
-# Publishes to npm with provenance when a version tag is pushed. Requires the NPM_TOKEN secret
-# and a maintainer pushing the tag; nothing publishes automatically from main.
+# Publishes to npm with provenance when a maintainer pushes a version tag (v<version>). Nothing
+# publishes automatically from main.
+#
+# Authentication:
+# - First release: npm trusted publishing can only be set up for packages that already exist, so
+#   the first publish uses the NPM_TOKEN repository secret (a granular token limited to the
+#   agentbelt packages and the @agentbelt scope).
+# - Later releases: configure this workflow (release.yml) as the trusted publisher of each package
+#   on npmjs.com, then delete the NPM_TOKEN secret. npm then uses short-lived OIDC credentials.
 name: release
 on:
   push:
     tags: ['v*']
 permissions:
   contents: read
-  id-token: write
+  id-token: write # npm provenance and trusted publishing (OIDC)
 jobs:
   publish:
     runs-on: macos-latest
@@ -16,11 +23,29 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm >= 11.5.1; Node 22 ships npm 10.
+      - run: npm install -g npm@11.6.2
+      - run: |
+          git config --global user.name "agentbelt CI"
+          git config --global user.email "ci@agentbelt.invalid"
+      - name: Tag must match every package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          for w in packages/core plugins/git plugins/testing plugins/workflows plugins/agent packages/cli; do
+            v=$(node -p "require('./$w/package.json').version")
+            [ "$v" = "$tag" ] || { echo "$w is $v, tag is $tag"; exit 1; }
+          done
       - run: npm ci --ignore-scripts
       - run: npm run build
       - run: npm test
-      - run: |
+      - name: Publish (dependencies first; already-published versions are skipped)
+        run: |
           for w in packages/core plugins/git plugins/testing plugins/workflows plugins/agent packages/cli; do
+            name=$(node -p "require('./$w/package.json').name")
+            version=$(node -p "require('./$w/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "skip $name@$version (already published)"; continue
+            fi
             (cd "$w" && npm publish --provenance --access public)
           done
         env:
