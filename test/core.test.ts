@@ -111,7 +111,8 @@ test('the workspace is never the home directory or /', () => {
   // DeepSeek Harness starts servers in its profile folder; app settings folders are refused.
   const dsh = join(homedir(), '.dsh', 'profiles', 'desktop');
   if (existsSync(dsh)) assert.match(checkWorkspace(dsh)!, /settings folder/);
-  assert.match(checkWorkspace(join(homedir(), 'Library'))!, /settings folder/);
+  const library = join(homedir(), 'Library'); // macOS only
+  if (existsSync(library)) assert.match(checkWorkspace(library)!, /settings folder/);
   assert.equal(checkWorkspace(process.cwd()), null);
 });
 

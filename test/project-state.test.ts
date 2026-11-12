@@ -210,9 +210,14 @@ test('model discovery parses ollama output (test doubles) and routing checks cap
       return '  Model\n    context length      262144\n\n  Capabilities\n    completion\n    tools\n';
     return null;
   };
-  const reg = await discoverModels(runner, async () => {
-    throw new Error('not running');
-  }, ['big-tools:latest']);
+  const reg = await discoverModels(
+    runner,
+    async () => {
+      throw new Error('not running');
+    },
+    ['big-tools:latest'],
+    32,
+  ); // fixed memory: CI runners have 7-16 GB
   assert.equal(reg.providers.lmstudio, 'not running');
   assert.deepEqual(
     reg.models.map((m) => [m.name, m.running]),

@@ -76,8 +76,9 @@ export async function discoverModels(
     'qwen3.8:27b',
     'gemma4:12b-mlx',
   ],
+  /** Machine memory in GB (default: this machine's); tests pass a fixed value. */
+  memoryGB = Math.round(totalmem() / 1e9),
 ): Promise<ModelRegistry> {
-  const memoryGB = Math.round(totalmem() / 1e9);
   const models: LocalModel[] = [];
   const list = run('ollama', ['list']);
   let ollama: ModelRegistry['providers']['ollama'] = list === null ? 'not installed' : 'available';
