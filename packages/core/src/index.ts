@@ -33,3 +33,4 @@ export * from './project-state.js';
 export * from './context.js';
 export * from './models.js';
 export { statusReport, resumeReport, gitFacts } from './status.js';
+export * from './model.js';

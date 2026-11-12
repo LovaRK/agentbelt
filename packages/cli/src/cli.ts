@@ -52,6 +52,7 @@ import {
   skillsDir,
 } from './paths.js';
 import { FIRST_PARTY } from './plugins.js';
+import { agentCommand, loadAgent } from './agent.js';
 
 const VERSION: string = JSON.parse(
   readFileSync(join(packageDir(), 'package.json'), 'utf8'),
@@ -442,6 +443,8 @@ const HELP = `agentbelt ${VERSION} — safe git, testing and workflow tools for 
                      install, verify, then switch atomically (old version kept)
   rollback           switch back to the previous version
   uninstall [--yes]  remove agentbelt from your AI apps (config backups are kept)
+  agent setup [--provider local|deepseek|custom] [--model <m>] [--base-url <url>] [--allow-remote] [--key]
+  agent status | remove   optional coding agent (agent_run tool); API keys go to the OS keychain
   serve [--workspace <dir>]   the MCP server (what your apps run)
   plugin list | add <npm-package|file.tgz> | remove <name>
                      third-party plugins: install scripts disabled, run only in an OS sandbox
@@ -479,9 +482,17 @@ async function main() {
           notices.push((error as Error).message);
         }
       }
+      // The coding agent is optional: offered only after `agentbelt agent setup`.
+      let agent: ReturnType<typeof loadAgent> = null;
+      try {
+        agent = loadAgent();
+      } catch (error) {
+        notices.push(`agent not loaded: ${(error as Error).message}`);
+      }
       return serveStdio({
         version: VERSION,
-        plugins: [...FIRST_PARTY, ...external],
+        plugins: [...FIRST_PARTY, ...(agent ? [agent.plugin] : []), ...external],
+        model: agent?.model ?? null,
         workspace: flag('--workspace') ?? process.env.AGENTBELT_WORKSPACE,
         skillsDirs: [skillsDir()],
         notices,
@@ -499,6 +510,8 @@ async function main() {
       return contextCommand();
     case 'models':
       return modelsCommand();
+    case 'agent':
+      return agentCommand(args, { flag, has, say, confirm });
     case 'setup':
       say(`agentbelt ${VERSION} setup\n`);
       await installStep();

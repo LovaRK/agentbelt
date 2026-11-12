@@ -2,6 +2,7 @@
 // Tools never touch the system directly: everything goes through the context (ctx) the broker
 // gives them, which checks each action against the plugin's permissions when it happens.
 import type * as z from 'zod';
+import type { ChatRequest, ChatResult } from './model.js';
 import type { CommandResult } from './policy.js';
 
 export interface Permissions {
@@ -13,6 +14,11 @@ export interface Permissions {
   write?: boolean;
   /** Call other plugins' tools; each runs with its own plugin's permissions. */
   callTools?: boolean;
+  /**
+   * Chat with the model the user configured with `agentbelt agent setup`. The endpoint and API
+   * key stay in the core; the plugin only sends messages and gets replies.
+   */
+  model?: boolean;
 }
 
 export interface ToolResult {
@@ -46,6 +52,8 @@ export interface PluginContext {
   callTool(name: string, args: Record<string, unknown>): Promise<ToolResult>;
   /** Ids of all installed tools, e.g. git_status. */
   listTools(): string[];
+  /** The configured model (needs the model permission), or null if none is configured. */
+  model: { name: string; endpoint: string; chat(request: ChatRequest): Promise<ChatResult> } | null;
 }
 
 /** Any Standard Schema (zod objects, or JSON Schema wrapped by the MCP SDK). */

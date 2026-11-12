@@ -72,6 +72,7 @@ before(() => {
     'plugins/git',
     'plugins/testing',
     'plugins/workflows',
+    'plugins/agent',
     'packages/cli',
   ])
     execFileSync('npm', ['pack', '--pack-destination', pkgs('0.1.0')], {

@@ -20,7 +20,7 @@ jobs:
       - run: npm run build
       - run: npm test
       - run: |
-          for w in packages/core plugins/git plugins/testing plugins/workflows packages/cli; do
+          for w in packages/core plugins/git plugins/testing plugins/workflows plugins/agent packages/cli; do
             (cd "$w" && npm publish --provenance --access public)
           done
         env:

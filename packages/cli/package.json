@@ -33,7 +33,8 @@
     "@agentbelt/core": "0.1.0",
     "@agentbelt/plugin-git": "0.1.0",
     "@agentbelt/plugin-testing": "0.1.0",
-    "@agentbelt/plugin-workflows": "0.1.0"
+    "@agentbelt/plugin-workflows": "0.1.0",
+    "@agentbelt/plugin-agent": "0.1.0"
   },
   "engines": {
     "node": ">=22.13"

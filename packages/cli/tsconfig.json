@@ -6,6 +6,7 @@
     { "path": "../core" },
     { "path": "../../plugins/git" },
     { "path": "../../plugins/testing" },
-    { "path": "../../plugins/workflows" }
+    { "path": "../../plugins/workflows" },
+    { "path": "../../plugins/agent" }
   ]
 }

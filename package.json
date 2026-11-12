@@ -10,7 +10,7 @@
     "node": ">=22.13"
   },
   "scripts": {
-    "build": "tsc -b packages/core plugins/git plugins/testing plugins/workflows packages/cli",
+    "build": "tsc -b packages/core plugins/git plugins/testing plugins/workflows plugins/agent packages/cli",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --conditions=source --import tsx --test \"test/**/*.test.ts\"",
     "format": "prettier --write .",

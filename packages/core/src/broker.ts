@@ -15,6 +15,7 @@ import {
 import { dirname, join, resolve } from 'node:path';
 import type { AuditLog, Isolation } from './audit.js';
 import { childEnv } from './env.js';
+import type { ModelClient } from './model.js';
 import type { Plugin, PluginContext, ToolResult } from './plugin.js';
 import { checkCommand, checkPath, DEFAULT_COMMAND_TIMEOUT_MS, runCommand } from './policy.js';
 import { redact } from './redact.js';
@@ -30,6 +31,8 @@ export interface BrokerDeps {
   callTool: (id: string, args: Record<string, unknown>, via: string) => Promise<ToolResult>;
   listTools: () => string[];
   isolation?: Isolation;
+  /** The user's configured model, if any (optional coding agent). */
+  model?: ModelClient | null;
 }
 
 export function createContext(plugin: Plugin, deps: BrokerDeps): PluginContext {
@@ -138,5 +141,35 @@ export function createContext(plugin: Plugin, deps: BrokerDeps): PluginContext {
       return deps.callTool(id, args, plugin.name);
     },
     listTools: deps.listTools,
+    model: deps.model
+      ? {
+          name: deps.model.model,
+          endpoint: deps.model.endpoint,
+          async chat(request) {
+            if (!perms.model) deny(`${plugin.name} has no model permission`);
+            const started = Date.now();
+            try {
+              const r = await deps.model!.chat(request);
+              audit.write({
+                kind: 'model',
+                plugin: plugin.name,
+                detail: `${deps.model!.model} @ ${deps.model!.endpoint}: ${r.toolCalls.length} tool call(s), finish ${r.finishReason}, tokens ${r.usage.inputTokens ?? '?'}/${r.usage.outputTokens ?? '?'}`,
+                ok: true,
+                ms: Date.now() - started,
+              });
+              return r;
+            } catch (error) {
+              audit.write({
+                kind: 'model',
+                plugin: plugin.name,
+                detail: `${deps.model!.model} @ ${deps.model!.endpoint}: ${redact((error as Error).message)}`,
+                ok: false,
+                ms: Date.now() - started,
+              });
+              throw error;
+            }
+          },
+        }
+      : null,
   };
 }

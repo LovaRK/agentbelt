@@ -12,6 +12,7 @@ import * as z from 'zod';
 import { AuditLog, type Isolation } from './audit.js';
 import { BrokerDenied, createContext } from './broker.js';
 import { toolId, type Plugin, type ToolDefinition, type ToolResult } from './plugin.js';
+import type { ModelClient } from './model.js';
 import { redact } from './redact.js';
 import { ProjectState, STATUSES, type Status } from './project-state.js';
 import { resumeReport, statusReport } from './status.js';
@@ -27,6 +28,8 @@ export interface ServerOptions {
   isolation?: Isolation;
   /** Lines shown by agentbelt_status, e.g. third-party plugins that were refused and why. */
   notices?: string[];
+  /** The model for the optional coding agent (from `agentbelt agent setup`). */
+  model?: ModelClient | null;
 }
 
 /** The git repository containing `dir`, or `dir` itself. */
@@ -148,6 +151,7 @@ export function createAgentbeltServer(options: ServerOptions) {
         workspace: ws,
         audit,
         isolation: options.isolation,
+        model: options.model,
         callTool: (target, a, from) => invoke(target, a, from),
         listTools: () => [...tools.keys()],
       });
@@ -322,6 +326,7 @@ export function createAgentbeltServer(options: ServerOptions) {
       workspace: ws,
       audit,
       isolation: options.isolation,
+      model: options.model,
       callTool: (target, a, from) => invoke(target, a, from),
       listTools: () => [...tools.keys()],
     });

@@ -9,7 +9,7 @@ export type Isolation = 'policy-only' | 'os-sandbox' | 'none';
 
 export interface AuditEntry {
   ts: string;
-  kind: 'tool' | 'exec' | 'file' | 'denied';
+  kind: 'tool' | 'exec' | 'file' | 'denied' | 'model';
   client?: string;
   plugin: string;
   tool?: string;
