@@ -1,0 +1,24 @@
+{
+  "name": "@agentbelt/core",
+  "version": "0.1.0",
+  "description": "agentbelt core: MCP server host, plugin SDK, permission broker and audit log",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "zod": "^4.6.7"
+  }
+}

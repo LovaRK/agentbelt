@@ -1,0 +1,41 @@
+{
+  "name": "agentbelt",
+  "version": "0.1.0",
+  "description": "One install, every AI agent: safe git, testing and workflow tools for DeepSeek Harness, Claude Code, Codex and any MCP client",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "agentbelt": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "skills"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai-agents",
+    "deepseek",
+    "claude-code",
+    "codex",
+    "git",
+    "testing",
+    "workflows"
+  ],
+  "dependencies": {
+    "@agentbelt/core": "0.1.0",
+    "@agentbelt/plugin-git": "0.1.0",
+    "@agentbelt/plugin-testing": "0.1.0",
+    "@agentbelt/plugin-workflows": "0.1.0"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}
