@@ -103,6 +103,22 @@ compaction used more input tokens (51,591 to 99,744 against 38,038 to 64,764). T
 task in that round asked for a value the file reader could not reach, so it was replaced. The
 current version keeps lines that match the task and asks the model to use what is shown.
 
+## When to use it
+
+- **Leave `compact` off for short tasks.** It only helps when a run gets close to the model's
+  context limit. In a real run on 2026-11-13 (LM Studio calling `agent_run` with
+  gpt-oss-20b-16k, three named files, about 6,300 tokens of context), the run without compaction
+  finished in 4 steps with 12,295 input tokens. The same task with `contextBudget: 4000`
+  shortened the files 8 times, the model re-read what was shortened, and the run took 12 steps and
+  46,315 input tokens. Both answers were correct. One run each, so this is an example, not an
+  average.
+- **Do not set the budget below what the task needs.** Keep the default (10,000 for a 16k model)
+  unless you have measured otherwise.
+- **Some apps stop waiting before a long run ends.** `agent_run` with a local model can take a
+  few minutes. LM Studio reported a timeout for runs of 98 and 169 seconds, although both
+  finished and were recorded; `agentbelt tokens` (or `tokens_report`) shows them. Claude Code and
+  Codex wait longer. In apps with a short limit, keep `maxSteps` low and name the exact files.
+
 ## Not covered
 
 - Only one model and two tasks were measured. Other models, tasks and budgets may behave
