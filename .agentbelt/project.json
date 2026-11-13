@@ -431,13 +431,15 @@
       "id": "B1",
       "date": "2026-11-12",
       "text": "DeepSeek verification needs the user to send one prompt in DeepSeek Harness (no headless mode used)",
-      "item": "M10"
+      "item": "M10",
+      "resolvedAt": "2026-11-13T05:43:35.417Z"
     },
     {
       "id": "B2",
       "date": "2026-11-12",
       "text": "Release needs approvals: GitHub owner, commit author name, push, npm publish, Changesets install",
-      "item": "M12"
+      "item": "M12",
+      "resolvedAt": "2026-11-13T05:43:35.526Z"
     }
   ],
   "current": {
@@ -451,6 +453,6 @@
       "commit": "faf725d"
     }
   ],
-  "updatedAt": "2026-11-13T05:27:48.990Z",
+  "updatedAt": "2026-11-13T05:43:35.526Z",
   "version": "0.1.0"
 }
