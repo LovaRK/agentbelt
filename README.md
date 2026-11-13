@@ -20,19 +20,19 @@ npx agentbelt@0.1.0 setup
 
 1. It installs a pinned copy, with package install scripts disabled.
 2. It **verifies the copy with real tool calls** before activating it.
-3. It finds DeepSeek Harness, Claude Code and Codex on your machine, shows you each config change, and backs up each config file before changing it.
+3. It finds your AI apps (Claude Code, Codex, Cursor, VS Code, DeepSeek Harness, LM Studio, Claude Desktop), shows you each config change, and backs up each config file before changing it.
 
 ## Works with
 
 | App                  | Status                                                                  | How it connects                                                                                                              |
 | -------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **DeepSeek Harness** | first-class integration, verified with a real call (0.2.2-rc.1)         | `@deepseek-ai/dsh-mcp-client` entry in your profile; needs `setup --workspace <project>` (DeepSeek gives servers no project) |
+| **DeepSeek Harness** | ✅ verified 2026-11-13 with 0.2.2-rc.1: real tool calls                 | `@deepseek-ai/dsh-mcp-client` entry in your profile; needs `setup --workspace <project>` (DeepSeek gives servers no project) |
 | **Claude Code**      | ✅ verified 2026-11-12 with Claude Code 2.1.257: real tool calls        | `claude mcp add-json --scope user`                                                                                           |
 | **Codex**            | ✅ verified 2026-11-12 with codex-cli 0.166.0: real tool calls          | `codex mcp add`                                                                                                              |
-| Cursor               | verified with a real call (3.30; open a folder first)                   | `mcpServers.agentbelt` in `~/.cursor/mcp.json` (project from MCP roots: open a folder)                                       |
-| VS Code              | verified with a real Copilot agent-mode call (1.142)                    | `servers.agentbelt` in the user `mcp.json` (project from MCP roots)                                                          |
+| **Cursor**           | ✅ verified 2026-11-13 with 3.30: real tool calls (open a folder first) | `mcpServers.agentbelt` in `~/.cursor/mcp.json` (project from MCP roots: open a folder)                                       |
+| **VS Code**          | ✅ verified 2026-11-13 with 1.142 (Copilot agent mode)                  | `servers.agentbelt` in the user `mcp.json` (project from MCP roots)                                                          |
 | Claude Desktop       | config written by `setup`; not yet verified with a real call            | `mcpServers.agentbelt` in `claude_desktop_config.json`; needs `--workspace`                                                  |
-| LM Studio            | verified with a real call (0.4.28; turn on `mcp/agentbelt` in the chat) | `mcpServers.agentbelt` in `~/.lmstudio/mcp.json`; needs `--workspace`                                                        |
+| **LM Studio**        | ✅ verified 2026-11-13 with 0.4.28 (turn on `mcp/agentbelt` in chat)    | `mcpServers.agentbelt` in `~/.lmstudio/mcp.json`; needs `--workspace`                                                        |
 | Any MCP client       | stdio server                                                            | command `~/.local/share/agentbelt/bin/agentbelt`, args `["serve"]`                                                           |
 
 "Verified" means the app called agentbelt tools in a real session and the result was checked in agentbelt's audit log, not just that a connection was made. See [docs/compatibility.md](docs/compatibility.md).
@@ -78,7 +78,7 @@ agentbelt is built so that a confused or manipulated model can't do much damage.
 - **Honest isolation labels.** Built-in plugins run as `policy-only`: the permission and command checks apply, but there is no OS sandbox. Project test scripts are your project's own code, and they run like they would in your terminal.
 - **Third-party plugins run only in an OS sandbox.** The sandbox has no network, no access to your files and no secrets in the environment. Their only way to act is the broker:
   - They are installed with **package scripts disabled**, and pinned to a hash of the reviewed files.
-  - If no sandbox is available (today: anything except macOS), they are **refused**. agentbelt never falls back to running untrusted code with only policy checks.
+  - If no sandbox is available (macOS `sandbox-exec` or Linux bubblewrap), they are **refused**. agentbelt never falls back to running untrusted code with only policy checks.
 
 Read [SECURITY.md](SECURITY.md) for the full model and its limits.
 
@@ -114,7 +114,7 @@ A workflow is JSON: steps call tools, and `approval` steps wait for you.
 }
 ```
 
-Put your own workflows in `<project>/.agentbelt/workflows/*.json`. Workflows run only when you (or your AI app at your request) start them. agentbelt v0.1 has no background scheduler or triggers.
+Put your own workflows in `<project>/.agentbelt/workflows/*.json`. Workflows run only when you (or your AI app at your request) start them, or when you opt in to the scheduler (below).
 
 ## Optional extras (off by default)
 
