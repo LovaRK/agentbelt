@@ -176,7 +176,7 @@ export async function runAgent(
 
 export default definePlugin({
   name: 'agent',
-  version: '0.1.0',
+  version: '0.1.1',
   description:
     'Optional coding agent: hands a task to the model chosen at `agentbelt agent setup`, which works through the broker.',
   permissions: { read: true, write: true, callTools: true, model: true },

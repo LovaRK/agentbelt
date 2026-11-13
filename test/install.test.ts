@@ -21,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 import { deepseek } from '../packages/cli/src/adapters.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
+const V: string = JSON.parse(readFileSync(join(root, 'packages/cli/package.json'), 'utf8')).version;
 let dir = '';
 const which = (b: string) => execFileSync('which', [b], { encoding: 'utf8' }).trim();
 const pkgs = (v: string) => join(dir, `pkgs-${v}`);
@@ -43,14 +44,14 @@ const active = () =>
 /** A copy of the packed packages with the CLI package changed to `version` (optionally broken). */
 function variant(version: string, broken = false) {
   const out = pkgs(version);
-  cpSync(pkgs('0.1.0'), out, { recursive: true });
+  cpSync(pkgs(V), out, { recursive: true });
   const work = join(dir, `unpack-${version}`);
   mkdirSync(work);
-  execFileSync('tar', ['-xzf', join(out, 'agentbelt-0.1.0.tgz'), '-C', work]);
+  execFileSync('tar', ['-xzf', join(out, `agentbelt-${V}.tgz`), '-C', work]);
   const pj = join(work, 'package', 'package.json');
   writeFileSync(
     pj,
-    readFileSync(pj, 'utf8').replace('"version": "0.1.0"', `"version": "${version}"`),
+    readFileSync(pj, 'utf8').replace(`"version": "${V}"`, `"version": "${version}"`),
   );
   if (broken) {
     const entry = join(work, 'package', 'dist', 'cli.js');
@@ -59,14 +60,14 @@ function variant(version: string, broken = false) {
       readFileSync(entry, 'utf8').replace("case 'serve':", "case 'serve': process.exit(3);"),
     );
   }
-  rmSync(join(out, 'agentbelt-0.1.0.tgz'));
+  rmSync(join(out, `agentbelt-${V}.tgz`));
   execFileSync('tar', ['-czf', join(out, `agentbelt-${version}.tgz`), '-C', work, 'package']);
 }
 
 before(() => {
   execFileSync('npm', ['run', 'build'], { cwd: root, stdio: 'ignore' });
   dir = mkdtempSync(join(tmpdir(), 'agentbelt-install-'));
-  mkdirSync(pkgs('0.1.0'));
+  mkdirSync(pkgs(V));
   for (const w of [
     'packages/core',
     'plugins/git',
@@ -75,12 +76,12 @@ before(() => {
     'plugins/agent',
     'packages/cli',
   ])
-    execFileSync('npm', ['pack', '--pack-destination', pkgs('0.1.0')], {
+    execFileSync('npm', ['pack', '--pack-destination', pkgs(V)], {
       cwd: join(root, w),
       stdio: 'ignore',
     });
-  variant('0.1.1');
-  variant('0.1.2', true);
+  variant('9.0.1');
+  variant('9.0.2', true);
   mkdirSync(join(dir, 'bin'));
   for (const b of ['node', 'npm', 'git']) symlinkSync(which(b), join(dir, 'bin', b));
   for (const c of ['claude', 'codex']) {
@@ -101,11 +102,11 @@ before(() => {
 after(() => rmSync(dir, { recursive: true, force: true }));
 
 test('setup installs a verified copy, connects all three clients, and doctor passes', () => {
-  const r = cli(['setup', '--from', pkgs('0.1.0'), '--yes', '--workspace', dir]);
+  const r = cli(['setup', '--from', pkgs(V), '--yes', '--workspace', dir]);
   assert.equal(r.code, 0, r.out);
-  assert.match(r.out, /verifying 0\.1\.0 before activating/i);
+  assert.match(r.out, new RegExp(`verifying ${V.replaceAll('.', '\\.')} before activating`, 'i'));
   assert.match(r.out, /✓ testing_detect ok/);
-  assert.equal(active(), '0.1.0');
+  assert.equal(active(), V);
   const calls = readFileSync(join(dir, 'calls.log'), 'utf8');
   assert.match(calls, /claude mcp add-json --scope user agentbelt .*"args":\["serve"\]/);
   assert.match(calls, /codex mcp add agentbelt -- .*\/bin\/agentbelt serve/);
@@ -119,7 +120,7 @@ test('setup installs a verified copy, connects all three clients, and doctor pas
   assert.match(r.out, /Claude Code: connected/);
   assert.match(r.out, /Codex: connected/);
   // Running setup again changes nothing.
-  const again = cli(['setup', '--from', pkgs('0.1.0'), '--yes', '--workspace', dir]);
+  const again = cli(['setup', '--from', pkgs(V), '--yes', '--workspace', dir]);
   assert.equal(again.code, 0, again.out);
   assert.equal(
     readFileSync(
@@ -131,23 +132,23 @@ test('setup installs a verified copy, connects all three clients, and doctor pas
 });
 
 test('update verifies before switching; a broken release never becomes active', () => {
-  const good = cli(['update', '--from', pkgs('0.1.1'), '--yes']);
+  const good = cli(['update', '--from', pkgs('9.0.1'), '--yes']);
   assert.equal(good.code, 0, good.out);
-  assert.equal(active(), '0.1.1');
-  assert.match(good.out, /previous: 0\.1\.0, kept for rollback/);
+  assert.equal(active(), '9.0.1');
+  assert.ok(good.out.includes(`previous: ${V}, kept for rollback`), good.out);
 
-  const bad = cli(['update', '--from', pkgs('0.1.2'), '--yes']);
+  const bad = cli(['update', '--from', pkgs('9.0.2'), '--yes']);
   assert.notEqual(bad.code, 0);
   assert.match(bad.out, /verification failed, nothing was changed/);
-  assert.equal(active(), '0.1.1'); // still the working version
-  assert.ok(!existsSync(join(dir, 'home', '.local', 'share', 'agentbelt', 'versions', '0.1.2')));
+  assert.equal(active(), '9.0.1'); // still the working version
+  assert.ok(!existsSync(join(dir, 'home', '.local', 'share', 'agentbelt', 'versions', '9.0.2')));
   assert.equal(cli(['doctor']).code, 0);
 });
 
 test('rollback switches back to the previous version; uninstall removes only our entries', () => {
   const r = cli(['rollback']);
   assert.equal(r.code, 0, r.out);
-  assert.equal(active(), '0.1.0');
+  assert.equal(active(), V);
   assert.equal(cli(['doctor']).code, 0);
 
   const u = cli(['uninstall', '--yes']);
