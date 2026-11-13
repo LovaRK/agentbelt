@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 16/18 milestones (89% by evidence). Updated 2026-11-13T02:31:01.389Z.
+Verified 17/18 milestones (94% by evidence). Updated 2026-11-13T04:15:44.011Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -19,7 +19,7 @@ Verified 16/18 milestones (89% by evidence). Updated 2026-11-13T02:31:01.389Z.
 | M12 | Documentation and release | VERIFIED |  | M8, M9, M10, M11 | Public repo github.com/LovaRK/agentbelt; CI green (ubuntu+macOS x Node 22/24) and CodeQL green; all 6 packages published to npm as 0.1.0 on 2026-11-13 (agentbel |
 | M13 | Project control system (status, resume, progress, context, model routing) | VERIFIED |  | M1 | test/project-state.test.ts 7/7 (persistence, crash recovery, 3-process concurrency + stale lock, evidence rule, context thresholds, model discovery doubles + ro |
 | M14 | Linux bubblewrap sandbox backend | VERIFIED |  |  | GitHub CI run https://github.com/LovaRK/agentbelt/actions/runs/43308961942 (commit 5b701db): ubuntu-latest Node 22+24 with AGENTBELT_REQUIRE_SANDBOX=1, bubblewr |
-| M15 | Adapters: Cursor, VS Code, Claude Desktop, LM Studio | IMPLEMENTED_UNVERIFIED |  |  | commit a750121; test/adapters.test.ts 6/6 fixture tests; no real calls: Cursor/LM Studio not installed; VS Code/Claude Desktop installed but config change needs |
+| M15 | Adapters: Cursor, VS Code, Claude Desktop, LM Studio | VERIFIED |  |  | VS Code 1.142.0 Copilot agent mode, 2026-11-13: audit client 'Visual Studio Code' — testing_run_checks ok, workflows_start repo-health ok (git_status, git_log,  |
 | M16 | Optional coding-agent plugin | VERIFIED |  |  | commit 935de89; test/agent.test.ts 7/7; real local call 2026-11-12: Ollama gpt-oss-20b-16k:latest via agent_run on a demo npm repo, completed in 3 steps (read_f |
 | M17 | Opt-in scheduler and triggers | VERIFIED |  |  | commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44 |
 
@@ -92,11 +92,12 @@ Verified 16/18 milestones (89% by evidence). Updated 2026-11-13T02:31:01.389Z.
 - 2026-11-12T20:56 (cli): commit 1d8d58e; bubblewrapArgs unit test passes on macOS (sandbox.test.ts 6/6 incl. fail-closed); NOT run on Linux: no local Linux VM/container running, no remote so CI has never run
 - 2026-11-12T21:25 (cli): GitHub CI run https://github.com/LovaRK/agentbelt/actions/runs/43308961942 (commit 5b701db): ubuntu-latest Node 22+24 with AGENTBELT_REQUIRE_SANDBOX=1, bubblewrap backend active; malicious-plugin test blocked file read/write, shell, network, secrets. Not run on other distributions.
 
-### M15 Adapters: Cursor, VS Code, Claude Desktop, LM Studio — IMPLEMENTED_UNVERIFIED
+### M15 Adapters: Cursor, VS Code, Claude Desktop, LM Studio — VERIFIED
 - Done when: fixture tests pass; real calls only where the app is installed and approved
-- Files: packages/cli/src/adapters.ts, test/adapters.test.ts
+- Files: packages/cli/src/adapters.ts, test/adapters.test.ts, docs/compatibility.md, README.md
 - Tests: test/adapters.test.ts
 - 2026-11-12T20:57 (cli): commit a750121; test/adapters.test.ts 6/6 fixture tests; no real calls: Cursor/LM Studio not installed; VS Code/Claude Desktop installed but config change needs user approval
+- 2026-11-13T04:15 (claude): VS Code 1.142.0 Copilot agent mode, 2026-11-13: audit client 'Visual Studio Code' — testing_run_checks ok, workflows_start repo-health ok (git_status, git_log, testing_run_checks); project from MCP roots. Cursor/LM Studio/Claude Desktop remain config-only (fixtures).
 
 ### M16 Optional coding-agent plugin — VERIFIED
 - Done when: tests pass; real call against a local model
