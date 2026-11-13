@@ -23,7 +23,15 @@ Note: Bionic (also from Element Labs) shares `~/.lmstudio` but manages MCP serve
 Connectors and ignores `mcp.json`; agentbelt has no Bionic adapter. Claude Desktop, LM Studio and DeepSeek Harness give MCP servers no project folder, so
 `setup` needs `--workspace <project>` for them; VS Code and Cursor (with a folder open) send MCP roots.
 
-Release: `agentbelt@0.1.1` and the five `@agentbelt/*` packages are on npm (2026-11-13). A clean
+Release: `agentbelt@0.2.0` and the six `@agentbelt/*` packages (now including
+`@agentbelt/plugin-tokens`) are on npm (2026-11-13). A clean `npx agentbelt@0.2.0` from the
+registry in an empty home folder reports 0.2.0, and `setup` on a machine with 0.1.1 installed
+verified 0.2.0 before switching (MCP handshake, 19 tools with the agent configured, real
+`git_status`, `testing_detect` and `workflows_list` calls) and kept 0.1.1 for rollback. LM Studio
+0.4.28 then ran `agent_run` (with and without `compact`) and `tokens_report` against the local
+gpt-oss-20b-16k model; the runs are in the audit log.
+
+Earlier release: `agentbelt@0.1.1` and the five `@agentbelt/*` packages are on npm (2026-11-13). A clean
 `npx agentbelt@0.1.1 setup` from the registry was checked in an empty home folder: install,
 verification (MCP handshake, 16 tools, real `git_status`, `testing_detect` and `workflows_list`
 calls), `doctor`, and `setup --help` printing help only.

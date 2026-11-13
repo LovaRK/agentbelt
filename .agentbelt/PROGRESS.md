@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 18/18 milestones (100% by evidence). Updated 2026-11-13T05:43:35.526Z.
+Verified 19/19 milestones (100% by evidence). Updated 2026-11-13T12:54:19.634Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -22,6 +22,7 @@ Verified 18/18 milestones (100% by evidence). Updated 2026-11-13T05:43:35.526Z.
 | M15 | Adapters: Cursor, VS Code, Claude Desktop, LM Studio | VERIFIED |  |  | Real calls on 2026-11-13: VS Code 1.142.0 ('Visual Studio Code'), LM Studio 0.4.28 ('lmstudio-mcp-server-session'), Cursor 3.30.8 ('cursor-vscode', run 20261113 |
 | M16 | Optional coding-agent plugin | VERIFIED |  |  | commit 935de89; test/agent.test.ts 7/7; real local call 2026-11-12: Ollama gpt-oss-20b-16k:latest via agent_run on a demo npm repo, completed in 3 steps (read_f |
 | M17 | Opt-in scheduler and triggers | VERIFIED |  |  | commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44 |
+| M18 | Context compaction and usage report for the coding agent (0.2.0) | VERIFIED |  | M16 | commits 9f4886a, cd1a40b; 55/55 tests; measured with gpt-oss-20b-16k on Ollama (docs/token-optimization.md, docs/benchmarks/compaction-gpt-oss-20b-16k.json); re |
 
 ## Details
 
@@ -115,3 +116,9 @@ Verified 18/18 milestones (100% by evidence). Updated 2026-11-13T05:43:35.526Z.
 - Files: packages/core/src/scheduler.ts, packages/cli/src/scheduler-cli.ts
 - Tests: test/scheduler.test.ts
 - 2026-11-12T21:05 (cli): commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44
+
+### M18 Context compaction and usage report for the coding agent (0.2.0) — VERIFIED
+- Done when: tests pass; measured off vs on against a real local model; published
+- Files: plugins/tokens/src/compact.ts, plugins/tokens/src/index.ts, plugins/agent/src/index.ts, packages/cli/src/cli.ts, bench/compaction.ts
+- Tests: test/tokens.test.ts
+- 2026-11-13T12:54 (claude): commits 9f4886a, cd1a40b; 55/55 tests; measured with gpt-oss-20b-16k on Ollama (docs/token-optimization.md, docs/benchmarks/compaction-gpt-oss-20b-16k.json); real LM Studio agent_run calls 2026-11-13 recorded in audit; agentbelt@0.2.0 and @agentbelt/plugin-tokens@0.2.0 on npm, clean npx install reports 0.2.0
