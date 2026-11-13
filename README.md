@@ -2,7 +2,11 @@
 
 [![npm](https://img.shields.io/npm/v/agentbelt)](https://www.npmjs.com/package/agentbelt) [![ci](https://github.com/LovaRK/agentbelt/actions/workflows/ci.yml/badge.svg)](https://github.com/LovaRK/agentbelt/actions/workflows/ci.yml) [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
+<p align="center"><img src="docs/assets/agentbelt-launch.png" alt="agentbelt: one install, every AI coding agent" width="820"></p>
+
 **One install. Every AI agent. Safe tools for your real dev work.**
+
+⭐ If agentbelt is useful to you, [star the repo](https://github.com/LovaRK/agentbelt) so more developers can find it. · 📖 [Guide](https://lovark.github.io/agentbelt/)
 
 agentbelt gives your AI coding apps the same set of safe, audited tools:
 

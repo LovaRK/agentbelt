@@ -5,6 +5,8 @@ description: One install. Every AI agent. Safe tools for your real dev work.
 
 # agentbelt
 
+![agentbelt: one install, every AI coding agent](assets/agentbelt-launch.png)
+
 **One install. Every AI agent. Safe tools for your real dev work.**
 
 agentbelt gives the AI apps you already use (Claude Code, Codex, Cursor, VS Code, DeepSeek
