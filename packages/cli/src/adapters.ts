@@ -230,7 +230,10 @@ function jsonApp(o: JsonAppOptions): ClientAdapter {
   };
 }
 
-/** Cursor: ~/.cursor/mcp.json. Cursor substitutes ${workspaceFolder}, so the open project is used. */
+/**
+ * Cursor: ~/.cursor/mcp.json. Cursor does not expand ${workspaceFolder} in this global file
+ * (checked with Cursor 3.30), so the server asks Cursor for the open project via MCP roots.
+ */
 export function cursor(home = homedir()): ClientAdapter {
   return jsonApp({
     id: 'cursor',
@@ -239,12 +242,7 @@ export function cursor(home = homedir()): ClientAdapter {
     key: 'mcpServers',
     detect: () => existsSync(join(home, '.cursor')) || existsSync('/Applications/Cursor.app'),
     reload: 'Cursor picks it up in Settings → MCP',
-    shape: (e) => ({
-      command: e.command,
-      args: e.args.includes('--workspace')
-        ? e.args
-        : [...e.args, '--workspace', '${workspaceFolder}'],
-    }),
+    shape: (e) => ({ command: e.command, args: e.args }),
   });
 }
 
