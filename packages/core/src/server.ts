@@ -105,7 +105,11 @@ export function createAgentbeltServer(options: ServerOptions) {
   );
   const client = () => server.server.getClientVersion()?.name ?? options.clientName ?? 'unknown';
   const tools = new Map<string, { plugin: Plugin; tool: ToolDefinition }>();
-  let workspace: string | null = options.workspace ? resolve(options.workspace) : null;
+  // A client that leaves a placeholder unexpanded (Cursor passes `${workspaceFolder}` literally
+  // when no folder is open) has not named a project: fall back to MCP roots / the cwd.
+  const given =
+    options.workspace && !/\$\{[^}]*\}/.test(options.workspace) ? options.workspace : null;
+  let workspace: string | null = given ? resolve(given) : null;
   let audit: AuditLog | null = null;
 
   async function resolveWorkspace(): Promise<string> {

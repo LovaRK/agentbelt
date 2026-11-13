@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { homedir } from 'node:os';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
 import * as z from 'zod';
 import { checkWorkspace, createAgentbeltServer, definePlugin, ok } from '@agentbelt/core';
@@ -143,6 +143,25 @@ test('secrets in tool output are redacted before the model sees them', async () 
     const r = await invoke('leak_say', {});
     assert.doesNotMatch(r.text, /ghp_/);
   } finally {
+    repo.cleanup();
+  }
+});
+
+test('an unexpanded ${…} workspace (Cursor with no folder open) falls back to the project', async () => {
+  const repo = tempRepo();
+  const before = process.cwd();
+  try {
+    process.chdir(repo.dir);
+    const { invoke } = createAgentbeltServer({
+      version: 't',
+      plugins: [probe],
+      workspace: '${workspaceFolder}',
+    });
+    const r = await invoke('probe_run', { program: 'git', args: ['rev-parse', '--show-toplevel'] });
+    assert.equal(r.isError ?? false, false, r.text);
+    assert.match(r.text, new RegExp(realpathSync(repo.dir).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  } finally {
+    process.chdir(before);
     repo.cleanup();
   }
 });
