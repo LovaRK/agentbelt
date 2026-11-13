@@ -145,7 +145,7 @@ async function connectClients(): Promise<void> {
       ? { ...base, args: ['serve', '--workspace', resolve(workspace!)] }
       : base;
     if (a.isInstalled() && !has('--reconnect')) {
-      say(`✓ ${a.label}: already connected`);
+      say(`✓ ${a.label}: already connected (run setup --reconnect to rewrite its entry)`);
       continue;
     }
     say(`\n${a.label} — will ${a.describe(entry)}`);
