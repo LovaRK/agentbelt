@@ -6,7 +6,7 @@
 
 **One install. Every AI agent. Safe tools for your real dev work.**
 
-⭐ If agentbelt is useful to you, [star the repo](https://github.com/LovaRK/agentbelt) so more developers can find it. · 📖 [Guide](https://lovark.github.io/agentbelt/)
+⭐ If agentbelt is useful to you, [star the repo](https://github.com/LovaRK/agentbelt) so more developers can find it. · 📖 [Guide](https://lovark.github.io/agentbelt/) · ✍️ [Why I built it](https://medium.com/@plovark/one-toolbelt-for-every-ai-coding-assistant-why-i-built-agentbelt-8003208f22f1)
 
 agentbelt gives your AI coding apps the same set of safe, audited tools:
 
