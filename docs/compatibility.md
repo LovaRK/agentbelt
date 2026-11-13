@@ -11,13 +11,15 @@ A successful connection alone doesn't count.
 | VS Code (Copilot Chat, Agent mode) | 1.142.0           | 2026-11-13 | same as above                                                                                           | ✅     | project folder from MCP roots (no `--workspace`); audit client `Visual Studio Code`; agent-mode tool calls approved in the chat                              |
 | DeepSeek Harness                   | 0.2.2-rc.1        | 2026-11-13 | same as above                                                                                           | ✅     | audit client `dsh-mcp-client`; no MCP roots, so `setup --workspace <project>` is required                                                                    |
 | LM Studio                          | 0.4.28            | 2026-11-13 | same as above                                                                                           | ✅     | audit client `lmstudio-mcp-server-session`; model qwen3-4b-2507; plugin `mcp/agentbelt` must be switched on in the chat; needs `setup --workspace <project>` |
+| Cursor                             | 3.30.8            | 2026-11-13 | same as above                                                                                           | ✅     | audit client `cursor-vscode`; project from MCP roots (open the folder first)                                                                                 |
 
-Config only (no real tool call yet): Cursor and Claude Desktop. Cursor 3.30 connected and listed the 17 tools, but it does not expand
-`${workspaceFolder}` in `~/.cursor/mcp.json`, sends no MCP roots, and starts servers in the home
-folder (agentbelt refuses it), so Cursor now needs `setup --workspace <project>`.
+Config only (no real tool call yet): Claude Desktop. Cursor 3.30 does not expand
+`${workspaceFolder}` in `~/.cursor/mcp.json` (the first setup pointed at a nonexistent folder), but
+with a folder open it sends MCP roots, so setup writes plain `serve`. In Cursor's "No Repo" agent
+window there is no project, and agentbelt refuses the home folder.
 Note: Bionic (also from Element Labs) shares `~/.lmstudio` but manages MCP servers as its own
-Connectors and ignores `mcp.json`; agentbelt has no Bionic adapter. Cursor, Claude Desktop, LM Studio and DeepSeek Harness give MCP servers no project folder, so
-`setup` needs `--workspace <project>` for them; VS Code sends MCP roots.
+Connectors and ignores `mcp.json`; agentbelt has no Bionic adapter. Claude Desktop, LM Studio and DeepSeek Harness give MCP servers no project folder, so
+`setup` needs `--workspace <project>` for them; VS Code and Cursor (with a folder open) send MCP roots.
 
 Release: `agentbelt@0.1.0` and the five `@agentbelt/*` packages are on npm (2026-11-13). A clean
 `npx agentbelt@0.1.0 setup` from the registry was checked: install, verification, MCP handshake,

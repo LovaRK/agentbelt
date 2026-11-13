@@ -6,7 +6,7 @@ Update progress with `agentbelt progress set <id> <STATUS> --evidence "…"` (VE
 - Milestones: 18 verified, 0 implemented-unverified, 0 in progress, 0 not started, 0 blocked, 0 failed
 - Current: M15 Adapters: Cursor, VS Code, Claude Desktop, LM Studio (VERIFIED)
 - Interrupted (IN_PROGRESS): none
-- Last verified: M15 Adapters: Cursor, VS Code, Claude Desktop, LM Studio — Real calls: VS Code 1.142.0 (client 'Visual Studio Code') and LM Studio 0.4.28 (client 'lmstudio-mcp-server-session', qwen3-4b-2507), 2026-11-13: testing_run_checks ok, workflows_start repo-health ok. Cursor and Claude Desktop remain config-only (fixtures).
+- Last verified: M15 Adapters: Cursor, VS Code, Claude Desktop, LM Studio — Real calls on 2026-11-13: VS Code 1.142.0 ('Visual Studio Code'), LM Studio 0.4.28 ('lmstudio-mcp-server-session'), Cursor 3.30.8 ('cursor-vscode', run 20261113052709-cb53 succeeded, project via MCP roots): testing_run_checks ok, workflows_start repo-health ok. Claude Desktop remains config-only.
 - Next: none
 - Open blockers: B1 DeepSeek verification needs the user to send one prompt in DeepSeek Harness (no headless mode used); B2 Release needs approvals: GitHub owner, commit author name, push, npm publish, Changesets install
 - Recent decisions: D3 Untrusted plugins fail closed; D4 Model-independent, local-first routing; D5 Project state

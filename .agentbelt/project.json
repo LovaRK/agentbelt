@@ -321,9 +321,14 @@
           "at": "2026-11-13T05:03:05.083Z",
           "text": "Real calls: VS Code 1.142.0 (client 'Visual Studio Code') and LM Studio 0.4.28 (client 'lmstudio-mcp-server-session', qwen3-4b-2507), 2026-11-13: testing_run_checks ok, workflows_start repo-health ok. Cursor and Claude Desktop remain config-only (fixtures).",
           "by": "claude"
+        },
+        {
+          "at": "2026-11-13T05:27:48.990Z",
+          "text": "Real calls on 2026-11-13: VS Code 1.142.0 ('Visual Studio Code'), LM Studio 0.4.28 ('lmstudio-mcp-server-session'), Cursor 3.30.8 ('cursor-vscode', run 20261113052709-cb53 succeeded, project via MCP roots): testing_run_checks ok, workflows_start repo-health ok. Claude Desktop remains config-only.",
+          "by": "claude"
         }
       ],
-      "updatedAt": "2026-11-13T05:03:05.083Z",
+      "updatedAt": "2026-11-13T05:27:48.990Z",
       "files": [
         "packages/cli/src/adapters.ts",
         "test/adapters.test.ts",
@@ -446,6 +451,6 @@
       "commit": "faf725d"
     }
   ],
-  "updatedAt": "2026-11-13T05:03:05.083Z",
+  "updatedAt": "2026-11-13T05:27:48.990Z",
   "version": "0.1.0"
 }

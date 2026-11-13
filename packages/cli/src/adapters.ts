@@ -231,15 +231,14 @@ function jsonApp(o: JsonAppOptions): ClientAdapter {
 }
 
 /**
- * Cursor: ~/.cursor/mcp.json. Checked with Cursor 3.30: it does not expand ${workspaceFolder} in
- * this global file, sends no MCP roots, and starts servers in the home folder, so (like Claude
- * Desktop) setup needs --workspace <project>.
+ * Cursor: ~/.cursor/mcp.json. Checked with Cursor 3.30: ${workspaceFolder} is not expanded in this
+ * global file, but with a folder open Cursor sends it as MCP roots. With no folder open the server
+ * starts in the home folder and agentbelt refuses it.
  */
 export function cursor(home = homedir()): ClientAdapter {
   return jsonApp({
     id: 'cursor',
     label: 'Cursor',
-    needsWorkspace: true,
     file: join(home, '.cursor', 'mcp.json'),
     key: 'mcpServers',
     detect: () => existsSync(join(home, '.cursor')) || existsSync('/Applications/Cursor.app'),

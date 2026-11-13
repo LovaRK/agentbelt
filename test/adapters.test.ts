@@ -100,7 +100,7 @@ test('apps that give servers no project require --workspace; the others do not',
   assert.equal(claudeDesktop(home).needsWorkspace, true);
   assert.equal(lmStudio(home).needsWorkspace, true);
   assert.ok(!vscode(home).needsWorkspace); // VS Code sends workspace folders as MCP roots
-  assert.equal(cursor(home).needsWorkspace, true); // Cursor 3.30: no roots, no ${workspaceFolder}
+  assert.ok(!cursor(home).needsWorkspace); // Cursor sends the open folder as MCP roots
   // An explicit --workspace is kept as is for Cursor.
   const c = cursor(home);
   mkdirSync(join(home, '.cursor'), { recursive: true });
