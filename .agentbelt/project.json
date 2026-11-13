@@ -174,7 +174,7 @@
     {
       "id": "M10",
       "title": "DeepSeek integration",
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "criteria": "real MCP execution in audit log",
       "dependsOn": [
         "M7"
@@ -184,9 +184,18 @@
           "at": "2026-11-12T20:54:01.570Z",
           "text": "DeepSeek Harness 0.2.2-rc.1 loaded the agentbelt entry and started the server (parent process = DeepSeek app); 0 tool calls in the audit log so far",
           "by": "cli"
+        },
+        {
+          "at": "2026-11-13T04:22:59.510Z",
+          "text": "DeepSeek Harness 0.2.2-rc.1, 2026-11-13: audit client 'dsh-mcp-client' — testing_run_checks ok, workflows_start repo-health ok (git_status, git_log, testing_run_checks); workspace via setup --workspace.",
+          "by": "claude"
         }
       ],
-      "updatedAt": "2026-11-12T20:54:01.570Z"
+      "updatedAt": "2026-11-13T04:22:59.511Z",
+      "files": [
+        "docs/compatibility.md",
+        "README.md"
+      ]
     },
     {
       "id": "M11",
@@ -433,6 +442,6 @@
       "commit": "faf725d"
     }
   ],
-  "updatedAt": "2026-11-13T04:15:44.011Z",
+  "updatedAt": "2026-11-13T04:22:59.511Z",
   "version": "0.1.0"
 }

@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 17/18 milestones (94% by evidence). Updated 2026-11-13T04:15:44.011Z.
+Verified 18/18 milestones (100% by evidence). Updated 2026-11-13T04:22:59.511Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -14,7 +14,7 @@ Verified 17/18 milestones (94% by evidence). Updated 2026-11-13T04:15:44.011Z.
 | M7 | CLI installer | VERIFIED |  | M6 | test/install.test.ts: setup in an isolated HOME from local packages, verify-before-activate, broken release never activated, rollback, uninstall. Not yet tested |
 | M8 | Claude Code integration | VERIFIED |  | M7 | Claude Code 2.1.257 headless with --mcp-config: real calls, audit client=claude-code 2026-11-12T20:04:30Z |
 | M9 | Codex integration | VERIFIED |  | M7 | codex-cli 0.166.0 exec with -c overrides: real calls, audit client=codex-mcp-client 2026-11-12T20:05:38Z |
-| M10 | DeepSeek integration | IN_PROGRESS |  | M7 | DeepSeek Harness 0.2.2-rc.1 loaded the agentbelt entry and started the server (parent process = DeepSeek app); 0 tool calls in the audit log so far |
+| M10 | DeepSeek integration | VERIFIED |  | M7 | DeepSeek Harness 0.2.2-rc.1, 2026-11-13: audit client 'dsh-mcp-client' — testing_run_checks ok, workflows_start repo-health ok (git_status, git_log, testing_run |
 | M11 | Security hardening | VERIFIED |  | M3 | test/sandbox.test.ts on macOS: postinstall never ran; sandboxed plugin blocked from files/network/shell/secrets; tampering refused; fail-closed without sandbox. |
 | M12 | Documentation and release | VERIFIED |  | M8, M9, M10, M11 | Public repo github.com/LovaRK/agentbelt; CI green (ubuntu+macOS x Node 22/24) and CodeQL green; all 6 packages published to npm as 0.1.0 on 2026-11-13 (agentbel |
 | M13 | Project control system (status, resume, progress, context, model routing) | VERIFIED |  | M1 | test/project-state.test.ts 7/7 (persistence, crash recovery, 3-process concurrency + stale lock, evidence rule, context thresholds, model discovery doubles + ro |
@@ -65,9 +65,11 @@ Verified 17/18 milestones (94% by evidence). Updated 2026-11-13T04:15:44.011Z.
 - Done when: real calls in audit log
 - 2026-11-12T20:54 (cli): codex-cli 0.166.0 exec with -c overrides: real calls, audit client=codex-mcp-client 2026-11-12T20:05:38Z
 
-### M10 DeepSeek integration — IN_PROGRESS
+### M10 DeepSeek integration — VERIFIED
 - Done when: real MCP execution in audit log
+- Files: docs/compatibility.md, README.md
 - 2026-11-12T20:54 (cli): DeepSeek Harness 0.2.2-rc.1 loaded the agentbelt entry and started the server (parent process = DeepSeek app); 0 tool calls in the audit log so far
+- 2026-11-13T04:22 (claude): DeepSeek Harness 0.2.2-rc.1, 2026-11-13: audit client 'dsh-mcp-client' — testing_run_checks ok, workflows_start repo-health ok (git_status, git_log, testing_run_checks); workspace via setup --workspace.
 
 ### M11 Security hardening — VERIFIED
 - Done when: security tests pass

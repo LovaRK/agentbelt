@@ -26,7 +26,7 @@ npx agentbelt@0.1.0 setup
 
 | App                  | Status                                                           | How it connects                                                                                                              |
 | -------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **DeepSeek Harness** | first-class integration (verification in progress)               | `@deepseek-ai/dsh-mcp-client` entry in your profile; needs `setup --workspace <project>` (DeepSeek gives servers no project) |
+| **DeepSeek Harness** | first-class integration, verified with a real call (0.2.2-rc.1)  | `@deepseek-ai/dsh-mcp-client` entry in your profile; needs `setup --workspace <project>` (DeepSeek gives servers no project) |
 | **Claude Code**      | ✅ verified 2026-11-12 with Claude Code 2.1.257: real tool calls | `claude mcp add-json --scope user`                                                                                           |
 | **Codex**            | ✅ verified 2026-11-12 with codex-cli 0.166.0: real tool calls   | `codex mcp add`                                                                                                              |
 | Cursor               | config written by `setup`; not verified (not installed here)     | `mcpServers.agentbelt` in `~/.cursor/mcp.json`, with `--workspace ${workspaceFolder}`                                        |
