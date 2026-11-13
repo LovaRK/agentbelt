@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 18/18 milestones (100% by evidence). Updated 2026-11-13T04:22:59.511Z.
+Verified 18/18 milestones (100% by evidence). Updated 2026-11-13T05:03:05.083Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -19,7 +19,7 @@ Verified 18/18 milestones (100% by evidence). Updated 2026-11-13T04:22:59.511Z.
 | M12 | Documentation and release | VERIFIED |  | M8, M9, M10, M11 | Public repo github.com/LovaRK/agentbelt; CI green (ubuntu+macOS x Node 22/24) and CodeQL green; all 6 packages published to npm as 0.1.0 on 2026-11-13 (agentbel |
 | M13 | Project control system (status, resume, progress, context, model routing) | VERIFIED |  | M1 | test/project-state.test.ts 7/7 (persistence, crash recovery, 3-process concurrency + stale lock, evidence rule, context thresholds, model discovery doubles + ro |
 | M14 | Linux bubblewrap sandbox backend | VERIFIED |  |  | GitHub CI run https://github.com/LovaRK/agentbelt/actions/runs/43308961942 (commit 5b701db): ubuntu-latest Node 22+24 with AGENTBELT_REQUIRE_SANDBOX=1, bubblewr |
-| M15 | Adapters: Cursor, VS Code, Claude Desktop, LM Studio | VERIFIED |  |  | VS Code 1.142.0 Copilot agent mode, 2026-11-13: audit client 'Visual Studio Code' — testing_run_checks ok, workflows_start repo-health ok (git_status, git_log,  |
+| M15 | Adapters: Cursor, VS Code, Claude Desktop, LM Studio | VERIFIED |  |  | Real calls: VS Code 1.142.0 (client 'Visual Studio Code') and LM Studio 0.4.28 (client 'lmstudio-mcp-server-session', qwen3-4b-2507), 2026-11-13: testing_run_ch |
 | M16 | Optional coding-agent plugin | VERIFIED |  |  | commit 935de89; test/agent.test.ts 7/7; real local call 2026-11-12: Ollama gpt-oss-20b-16k:latest via agent_run on a demo npm repo, completed in 3 steps (read_f |
 | M17 | Opt-in scheduler and triggers | VERIFIED |  |  | commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44 |
 
@@ -100,6 +100,7 @@ Verified 18/18 milestones (100% by evidence). Updated 2026-11-13T04:22:59.511Z.
 - Tests: test/adapters.test.ts
 - 2026-11-12T20:57 (cli): commit a750121; test/adapters.test.ts 6/6 fixture tests; no real calls: Cursor/LM Studio not installed; VS Code/Claude Desktop installed but config change needs user approval
 - 2026-11-13T04:15 (claude): VS Code 1.142.0 Copilot agent mode, 2026-11-13: audit client 'Visual Studio Code' — testing_run_checks ok, workflows_start repo-health ok (git_status, git_log, testing_run_checks); project from MCP roots. Cursor/LM Studio/Claude Desktop remain config-only (fixtures).
+- 2026-11-13T05:03 (claude): Real calls: VS Code 1.142.0 (client 'Visual Studio Code') and LM Studio 0.4.28 (client 'lmstudio-mcp-server-session', qwen3-4b-2507), 2026-11-13: testing_run_checks ok, workflows_start repo-health ok. Cursor and Claude Desktop remain config-only (fixtures).
 
 ### M16 Optional coding-agent plugin — VERIFIED
 - Done when: tests pass; real call against a local model

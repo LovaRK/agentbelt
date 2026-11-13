@@ -316,9 +316,14 @@
           "at": "2026-11-13T04:15:44.010Z",
           "text": "VS Code 1.142.0 Copilot agent mode, 2026-11-13: audit client 'Visual Studio Code' — testing_run_checks ok, workflows_start repo-health ok (git_status, git_log, testing_run_checks); project from MCP roots. Cursor/LM Studio/Claude Desktop remain config-only (fixtures).",
           "by": "claude"
+        },
+        {
+          "at": "2026-11-13T05:03:05.083Z",
+          "text": "Real calls: VS Code 1.142.0 (client 'Visual Studio Code') and LM Studio 0.4.28 (client 'lmstudio-mcp-server-session', qwen3-4b-2507), 2026-11-13: testing_run_checks ok, workflows_start repo-health ok. Cursor and Claude Desktop remain config-only (fixtures).",
+          "by": "claude"
         }
       ],
-      "updatedAt": "2026-11-13T04:15:44.011Z",
+      "updatedAt": "2026-11-13T05:03:05.083Z",
       "files": [
         "packages/cli/src/adapters.ts",
         "test/adapters.test.ts",
@@ -432,7 +437,6 @@
   ],
   "current": {
     "item": "M15",
-    "next": "M10",
     "note": "Verify DeepSeek: user sends the test prompt; check .agentbelt/audit.jsonl in the demo project for a non-claude/codex client"
   },
   "checkpoints": [
@@ -442,6 +446,6 @@
       "commit": "faf725d"
     }
   ],
-  "updatedAt": "2026-11-13T04:22:59.511Z",
+  "updatedAt": "2026-11-13T05:03:05.083Z",
   "version": "0.1.0"
 }

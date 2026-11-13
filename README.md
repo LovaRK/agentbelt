@@ -24,16 +24,16 @@ npx agentbelt@0.1.0 setup
 
 ## Works with
 
-| App                  | Status                                                           | How it connects                                                                                                              |
-| -------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **DeepSeek Harness** | first-class integration, verified with a real call (0.2.2-rc.1)  | `@deepseek-ai/dsh-mcp-client` entry in your profile; needs `setup --workspace <project>` (DeepSeek gives servers no project) |
-| **Claude Code**      | ✅ verified 2026-11-12 with Claude Code 2.1.257: real tool calls | `claude mcp add-json --scope user`                                                                                           |
-| **Codex**            | ✅ verified 2026-11-12 with codex-cli 0.166.0: real tool calls   | `codex mcp add`                                                                                                              |
-| Cursor               | config written by `setup`; not verified (not installed here)     | `mcpServers.agentbelt` in `~/.cursor/mcp.json`, with `--workspace ${workspaceFolder}`                                        |
-| VS Code              | verified with a real Copilot agent-mode call (1.142)             | `servers.agentbelt` in the user `mcp.json` (project from MCP roots)                                                          |
-| Claude Desktop       | config written by `setup`; not yet verified with a real call     | `mcpServers.agentbelt` in `claude_desktop_config.json`; needs `--workspace`                                                  |
-| LM Studio            | config written by `setup`; not verified (not installed here)     | `mcpServers.agentbelt` in `~/.lmstudio/mcp.json`; needs `--workspace`                                                        |
-| Any MCP client       | stdio server                                                     | command `~/.local/share/agentbelt/bin/agentbelt`, args `["serve"]`                                                           |
+| App                  | Status                                                                  | How it connects                                                                                                              |
+| -------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **DeepSeek Harness** | first-class integration, verified with a real call (0.2.2-rc.1)         | `@deepseek-ai/dsh-mcp-client` entry in your profile; needs `setup --workspace <project>` (DeepSeek gives servers no project) |
+| **Claude Code**      | ✅ verified 2026-11-12 with Claude Code 2.1.257: real tool calls        | `claude mcp add-json --scope user`                                                                                           |
+| **Codex**            | ✅ verified 2026-11-12 with codex-cli 0.166.0: real tool calls          | `codex mcp add`                                                                                                              |
+| Cursor               | config written by `setup`; not verified (not installed here)            | `mcpServers.agentbelt` in `~/.cursor/mcp.json`, with `--workspace ${workspaceFolder}`                                        |
+| VS Code              | verified with a real Copilot agent-mode call (1.142)                    | `servers.agentbelt` in the user `mcp.json` (project from MCP roots)                                                          |
+| Claude Desktop       | config written by `setup`; not yet verified with a real call            | `mcpServers.agentbelt` in `claude_desktop_config.json`; needs `--workspace`                                                  |
+| LM Studio            | verified with a real call (0.4.28; turn on `mcp/agentbelt` in the chat) | `mcpServers.agentbelt` in `~/.lmstudio/mcp.json`; needs `--workspace`                                                        |
+| Any MCP client       | stdio server                                                            | command `~/.local/share/agentbelt/bin/agentbelt`, args `["serve"]`                                                           |
 
 "Verified" means the app called agentbelt tools in a real session and the result was checked in agentbelt's audit log, not just that a connection was made. See [docs/compatibility.md](docs/compatibility.md).
 
@@ -140,7 +140,7 @@ To write one, see [docs/plugins.md](docs/plugins.md). A plugin is a name, its pe
 
 Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). Good first contributions include:
 
-- an adapter for another MCP client (Cursor, VS Code, LM Studio, Goose);
+- an adapter for another MCP client (for example Goose);
 - a new skill;
 - a test runner for another ecosystem.
 
