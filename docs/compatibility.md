@@ -16,5 +16,9 @@ config). Claude Desktop, LM Studio and DeepSeek Harness give MCP servers no proj
 `setup` needs `--workspace <project>` for them; VS Code sends MCP roots; Cursor substitutes
 `${workspaceFolder}`.
 
+Release: `agentbelt@0.1.0` and the five `@agentbelt/*` packages are on npm (2026-11-13). A clean
+`npx agentbelt@0.1.0 setup` from the registry was checked: install, verification, MCP handshake,
+16 tools, and real `git_status`, `testing_detect` and `workflows_list` calls.
+
 Server: official MCP TypeScript SDK `@modelcontextprotocol/server` 2.4.0. It negotiates protocol
 versions 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05 and 2024-10-07.
