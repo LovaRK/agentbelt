@@ -459,6 +459,7 @@ const HELP = `agentbelt ${VERSION} — safe git, testing and workflow tools for 
   approve <run> <step> [--note "…"] | reject <run> <step>
                      decide an approval gate (only possible here, never via AI tools)
   audit [--n 20]     recent audit log entries for this project
+  tokens [--n 20]    measured tokens of recent agent runs, with and without compaction
 
   status             project status: milestones, current/next task, context, local models
   resume             agent-ready handoff with live git facts (read-only)
@@ -500,7 +501,7 @@ async function main() {
       }
       return serveStdio({
         version: VERSION,
-        plugins: [...FIRST_PARTY, ...(agent ? [agent.plugin] : []), ...external],
+        plugins: [...FIRST_PARTY, ...(agent?.plugins ?? []), ...external],
         model: agent?.model ?? null,
         workspace: flag('--workspace') ?? process.env.AGENTBELT_WORKSPACE,
         skillsDirs: [skillsDir()],
@@ -585,6 +586,20 @@ async function main() {
           `${e.ts}  ${(e.client ?? '').padEnd(14)} ${e.kind.padEnd(6)} ${e.ok ? 'ok ' : 'NO '} ${e.plugin}${e.tool ? `/${e.tool}` : ''}  ${e.detail}`,
         );
       return;
+    }
+    case 'tokens': {
+      // Same report as the tokens_report tool, read from the agent plugin's run records.
+      const { readFileSync, existsSync } = await import('node:fs');
+      const { tokensReport } = await import('@agentbelt/plugin-tokens');
+      const file = join(
+        projectRoot(flag('--workspace') ?? process.cwd()),
+        '.agentbelt',
+        'state',
+        'agent',
+        'runs.json',
+      );
+      const runs = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : [];
+      return out(tokensReport(runs.slice(-Number(flag('--n') ?? 20))));
     }
     case 'version':
     case '--version':

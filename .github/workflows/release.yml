@@ -31,7 +31,7 @@ jobs:
       - name: Tag must match every package version
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          for w in packages/core plugins/git plugins/testing plugins/workflows plugins/agent packages/cli; do
+          for w in packages/core plugins/git plugins/testing plugins/workflows plugins/tokens plugins/agent packages/cli; do
             v=$(node -p "require('./$w/package.json').version")
             [ "$v" = "$tag" ] || { echo "$w is $v, tag is $tag"; exit 1; }
           done
@@ -40,7 +40,7 @@ jobs:
       - run: npm test
       - name: Publish (dependencies first; already-published versions are skipped)
         run: |
-          for w in packages/core plugins/git plugins/testing plugins/workflows plugins/agent packages/cli; do
+          for w in packages/core plugins/git plugins/testing plugins/workflows plugins/tokens plugins/agent packages/cli; do
             name=$(node -p "require('./$w/package.json').name")
             version=$(node -p "require('./$w/package.json').version")
             if npm view "$name@$version" version >/dev/null 2>&1; then

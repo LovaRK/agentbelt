@@ -7,6 +7,7 @@
     { "path": "../../plugins/git" },
     { "path": "../../plugins/testing" },
     { "path": "../../plugins/workflows" },
+    { "path": "../../plugins/tokens" },
     { "path": "../../plugins/agent" }
   ]
 }

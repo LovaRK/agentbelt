@@ -1,0 +1,31 @@
+{
+  "name": "@agentbelt/plugin-tokens",
+  "version": "0.2.0",
+  "description": "agentbelt token optimization: context compaction for long agent runs on small-context local models, and a measured token report",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LovaRK/agentbelt.git",
+    "directory": "plugins/tokens"
+  },
+  "homepage": "https://github.com/LovaRK/agentbelt#readme",
+  "bugs": "https://github.com/LovaRK/agentbelt/issues",
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@agentbelt/core": "0.2.0",
+    "zod": "4.6.7"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}

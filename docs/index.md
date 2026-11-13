@@ -115,6 +115,10 @@ Nothing updates by itself.
 
 - **Local coding agent:** `agentbelt agent setup --provider local --model <name>` lets your AI
   app hand a task to a local model (Ollama, LM Studio) or DeepSeek. Keys go to your OS keychain.
+- **Token optimization (0.2.0):** with a small-context local model (e.g. 16k), ask for
+  `agent_run` with `compact: true`. Older tool results are shortened before each model call, and
+  `agentbelt tokens` shows the measured tokens per run, with compaction off and on. See the
+  [measured results](https://github.com/LovaRK/agentbelt/blob/main/docs/token-optimization.md).
 - **Scheduler:** `agentbelt schedule add repo-health --cron "0 9 * * 1-5"` and
   `agentbelt scheduler run` run workflows on a timetable or when files or git change.
 

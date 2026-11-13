@@ -1,6 +1,6 @@
 {
   "name": "@agentbelt/plugin-git",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "agentbelt git plugin",
   "license": "Apache-2.0",
   "repository": {
@@ -22,7 +22,7 @@
     "dist"
   ],
   "dependencies": {
-    "@agentbelt/core": "0.1.1",
+    "@agentbelt/core": "0.2.0",
     "zod": "4.6.7"
   },
   "engines": {

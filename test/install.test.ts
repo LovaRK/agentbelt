@@ -73,6 +73,7 @@ before(() => {
     'plugins/git',
     'plugins/testing',
     'plugins/workflows',
+    'plugins/tokens',
     'plugins/agent',
     'packages/cli',
   ])

@@ -123,6 +123,7 @@ Put your own workflows in `<project>/.agentbelt/workflows/*.json`. Workflows run
 ## Optional extras (off by default)
 
 - **Coding agent:** `agentbelt agent setup --provider local --model <name>` (or `--provider deepseek`, or `custom --base-url …`). Your AI app can then hand a task to that model with `agent_run`. The key goes to the OS keychain. Verified with a local Ollama model (gpt-oss 20B); the DeepSeek API path is tested with a fake endpoint only.
+- **Token optimization (0.2.0):** for long agent runs on small-context local models, `agent_run` with `compact: true` shortens older tool results (keeps the lines that matter to the task and drops repeated outputs) before each model call. `agentbelt tokens` and the `tokens_report` tool show the input and output tokens the model server reported per run, with compaction off and on. Measured results, including where it did not help: [docs/token-optimization.md](docs/token-optimization.md).
 - **Scheduler and triggers:** `agentbelt schedule add repo-health --cron "0 9 * * 1-5"`, `agentbelt trigger add repo-health --on git --branch main`, then keep `agentbelt scheduler run` going. Only file and git triggers; nothing runs unless you start the scheduler.
 
 ## Plugins

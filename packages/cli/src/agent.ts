@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { chmodSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import agentPlugin from '@agentbelt/plugin-agent';
+import tokensPlugin from '@agentbelt/plugin-tokens';
 import {
   checkModelConfig,
   createModelClient,
@@ -21,10 +22,15 @@ import { home } from './paths.js';
 
 export const agentConfigFile = () => join(home(), 'agent-model.json');
 
-/** The agent plugin and its model, or null when no agent is configured (the default). */
-export function loadAgent(): { plugin: Plugin; model: ModelClient } | null {
+/**
+ * The agent plugin (with the tokens plugin, which reports on its runs) and its model, or null
+ * when no agent is configured (the default).
+ */
+export function loadAgent(): { plugins: Plugin[]; model: ModelClient } | null {
   const config = loadModelConfig(agentConfigFile());
-  return config ? { plugin: agentPlugin, model: createModelClient(config) } : null;
+  return config
+    ? { plugins: [agentPlugin, tokensPlugin as Plugin], model: createModelClient(config) }
+    : null;
 }
 
 function storeKey(account: string): boolean {

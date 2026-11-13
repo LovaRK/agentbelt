@@ -1,0 +1,418 @@
+{
+  "date": "2026-11-13",
+  "machine": "MacBook Air M4, 24 GB unified memory",
+  "server": "Ollama (OpenAI-compatible, 127.0.0.1:11434)",
+  "model": "gpt-oss-20b-16k:latest",
+  "contextBudget": 10000,
+  "note": "One run (test-log-twice, compaction off, rep 1) failed with a model error when other Ollama models were removed during the run; it is excluded and was re-run (rerun=true).",
+  "results": [
+    {
+      "task": "read-5-files",
+      "compact": false,
+      "rep": 1,
+      "correct": true,
+      "ms": 66670,
+      "tools": ["read_file", "read_file", "read_file", "read_file", "read_file"],
+      "answer": "The constant **KEYCHAIN_SERVICE** is defined in **`src/model.ts`** and its value is:\n\n```\n'agentbelt-agent'\n```",
+      "tokens": {
+        "id": "run-mwew6qw9",
+        "at": "2026-11-13T11:27:13.833Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Read these files one at a time with read_file: src/model.ts, src/sandbox.ts, src/external.ts, src/scheduler.ts, src/server.ts. After reading all five, answer: which file defines the KEYCHAIN_SERVICE c",
+        "status": "completed",
+        "steps": 6,
+        "inputTokens": 38038,
+        "outputTokens": 233,
+        "maxInputTokens": 13264,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": false,
+          "compactedCalls": 0,
+          "duplicates": 0,
+          "summarized": 0,
+          "estimatedTokensRemoved": 0
+        }
+      }
+    },
+    {
+      "task": "read-5-files",
+      "compact": true,
+      "rep": 1,
+      "correct": true,
+      "ms": 171587,
+      "tools": [
+        "read_file",
+        "read_file",
+        "read_file",
+        "read_file",
+        "read_file",
+        "search!",
+        "read_file",
+        "search!",
+        "list_files",
+        "read_file"
+      ],
+      "answer": "The constant is defined in **`src/model.ts`** as:\n\n```ts\nexport const KEYCHAIN_SERVICE = 'agentbelt-agent';\n```\n\nSo the file is `src/model.ts` and the value is the string `'agentbelt-agent'`.",
+      "tokens": {
+        "id": "run-mwewafdm",
+        "at": "2026-11-13T11:30:05.530Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Read these files one at a time with read_file: src/model.ts, src/sandbox.ts, src/external.ts, src/scheduler.ts, src/server.ts. After reading all five, answer: which file defines the KEYCHAIN_SERVICE c",
+        "status": "completed",
+        "steps": 11,
+        "inputTokens": 82439,
+        "outputTokens": 723,
+        "maxInputTokens": 10269,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": true,
+          "budgetTokens": 10000,
+          "compactedCalls": 6,
+          "duplicates": 2,
+          "summarized": 2,
+          "estimatedTokensRemoved": 32544
+        }
+      }
+    },
+    {
+      "task": "test-log-twice",
+      "compact": true,
+      "rep": 1,
+      "correct": false,
+      "ms": 43635,
+      "tools": ["run_checks", "run_checks", "list_files", "read_file", "run_checks", "run_checks"],
+      "answer": "- **Failing test**: `test`  \n- **Audit log file written by `src/audit.ts`**: `.agentbelt/audit.jsonl`",
+      "tokens": {
+        "id": "run-mwewbf9n",
+        "at": "2026-11-13T11:30:52.043Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Run the checks with run_checks, then run them a second time to confirm the failure is stable. Then read src/audit.ts. Report the name of the failing test and the file name of the audit log that src/au",
+        "status": "completed",
+        "steps": 7,
+        "inputTokens": 12592,
+        "outputTokens": 405,
+        "maxInputTokens": 3036,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": true,
+          "budgetTokens": 10000,
+          "compactedCalls": 4,
+          "duplicates": 2,
+          "summarized": 0,
+          "estimatedTokensRemoved": 5897
+        }
+      }
+    },
+    {
+      "task": "read-5-files",
+      "compact": true,
+      "rep": 2,
+      "correct": true,
+      "ms": 56718,
+      "tools": ["read_file", "read_file", "read_file", "read_file", "read_file"],
+      "answer": "The `KEYCHAIN_SERVICE` constant is defined in **src/model.ts** and its value is:\n\n```ts\nexport const KEYCHAIN_SERVICE = 'agentbelt-agent';\n```",
+      "tokens": {
+        "id": "run-mwewcn3p",
+        "at": "2026-11-13T11:31:48.853Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Read these files one at a time with read_file: src/model.ts, src/sandbox.ts, src/external.ts, src/scheduler.ts, src/server.ts. After reading all five, answer: which file defines the KEYCHAIN_SERVICE c",
+        "status": "completed",
+        "steps": 6,
+        "inputTokens": 34395,
+        "outputTokens": 234,
+        "maxInputTokens": 10269,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": true,
+          "budgetTokens": 10000,
+          "compactedCalls": 1,
+          "duplicates": 0,
+          "summarized": 2,
+          "estimatedTokensRemoved": 3560
+        }
+      }
+    },
+    {
+      "task": "read-5-files",
+      "compact": false,
+      "rep": 2,
+      "correct": true,
+      "ms": 73044,
+      "tools": ["read_file", "read_file", "read_file", "read_file", "read_file", "search!"],
+      "answer": "The `KEYCHAIN_SERVICE` constant is defined in **`src/model.ts`** and its value is:\n\n```\n'agentbelt-agent'\n```",
+      "tokens": {
+        "id": "run-mwewe7jd",
+        "at": "2026-11-13T11:33:01.994Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Read these files one at a time with read_file: src/model.ts, src/sandbox.ts, src/external.ts, src/scheduler.ts, src/server.ts. After reading all five, answer: which file defines the KEYCHAIN_SERVICE c",
+        "status": "completed",
+        "steps": 7,
+        "inputTokens": 51355,
+        "outputTokens": 325,
+        "maxInputTokens": 13317,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": false,
+          "compactedCalls": 0,
+          "duplicates": 0,
+          "summarized": 0,
+          "estimatedTokensRemoved": 0
+        }
+      }
+    },
+    {
+      "task": "test-log-twice",
+      "compact": true,
+      "rep": 2,
+      "correct": false,
+      "ms": 34843,
+      "tools": ["run_checks", "run_checks", "run_checks", "read_file"],
+      "answer": "**Failing test:** `test  (npm test)`  \n**Audit log file written by src/audit.ts:** `.agentbelt/audit.jsonl`",
+      "tokens": {
+        "id": "run-mweweyi0",
+        "at": "2026-11-13T11:33:36.936Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Run the checks with run_checks, then run them a second time to confirm the failure is stable. Then read src/audit.ts. Report the name of the failing test and the file name of the audit log that src/au",
+        "status": "completed",
+        "steps": 5,
+        "inputTokens": 9432,
+        "outputTokens": 357,
+        "maxInputTokens": 2920,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": true,
+          "budgetTokens": 10000,
+          "compactedCalls": 2,
+          "duplicates": 1,
+          "summarized": 0,
+          "estimatedTokensRemoved": 1958
+        }
+      }
+    },
+    {
+      "task": "test-log-twice",
+      "compact": false,
+      "rep": 2,
+      "correct": false,
+      "ms": 100024,
+      "tools": [
+        "run_checks",
+        "run_checks",
+        "read_file",
+        "run_checks",
+        "list_files",
+        "run_checks",
+        "list_files",
+        "list_files",
+        "list_files",
+        "list_files",
+        "list_files",
+        "run_checks",
+        "git_diff",
+        "list_files!",
+        "list_files"
+      ],
+      "answer": null,
+      "tokens": {
+        "id": "run-mwewh3qf",
+        "at": "2026-11-13T11:35:17.031Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Run the checks with run_checks, then run them a second time to confirm the failure is stable. Then read src/audit.ts. Report the name of the failing test and the file name of the audit log that src/au",
+        "status": "max_steps",
+        "steps": 15,
+        "inputTokens": 62872,
+        "outputTokens": 1596,
+        "maxInputTokens": 6182,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": false,
+          "compactedCalls": 0,
+          "duplicates": 0,
+          "summarized": 0,
+          "estimatedTokensRemoved": 0
+        }
+      }
+    },
+    {
+      "task": "read-5-files",
+      "compact": false,
+      "rep": 3,
+      "correct": true,
+      "ms": 69139,
+      "tools": ["read_file", "read_file", "read_file", "read_file", "read_file", "search!"],
+      "answer": "The `KEYCHAIN_SERVICE` constant is defined in **`src/model.ts`** and its value is:\n\n```\n'agentbelt-agent'\n```",
+      "tokens": {
+        "id": "run-mwewil5l",
+        "at": "2026-11-13T11:36:26.265Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Read these files one at a time with read_file: src/model.ts, src/sandbox.ts, src/external.ts, src/scheduler.ts, src/server.ts. After reading all five, answer: which file defines the KEYCHAIN_SERVICE c",
+        "status": "completed",
+        "steps": 7,
+        "inputTokens": 51355,
+        "outputTokens": 278,
+        "maxInputTokens": 13317,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": false,
+          "compactedCalls": 0,
+          "duplicates": 0,
+          "summarized": 0,
+          "estimatedTokensRemoved": 0
+        }
+      }
+    },
+    {
+      "task": "read-5-files",
+      "compact": true,
+      "rep": 3,
+      "correct": true,
+      "ms": 49854,
+      "tools": ["read_file", "read_file", "read_file", "read_file", "read_file"],
+      "answer": "The `KEYCHAIN_SERVICE` constant is defined in **`src/model.ts`** and its value is:\n\n```ts\nexport const KEYCHAIN_SERVICE = 'agentbelt-agent';\n```",
+      "tokens": {
+        "id": "run-mwewjnp8",
+        "at": "2026-11-13T11:37:16.220Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Read these files one at a time with read_file: src/model.ts, src/sandbox.ts, src/external.ts, src/scheduler.ts, src/server.ts. After reading all five, answer: which file defines the KEYCHAIN_SERVICE c",
+        "status": "completed",
+        "steps": 6,
+        "inputTokens": 34395,
+        "outputTokens": 236,
+        "maxInputTokens": 10269,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": true,
+          "budgetTokens": 10000,
+          "compactedCalls": 1,
+          "duplicates": 0,
+          "summarized": 2,
+          "estimatedTokensRemoved": 3560
+        }
+      }
+    },
+    {
+      "task": "test-log-twice",
+      "compact": false,
+      "rep": 3,
+      "correct": true,
+      "ms": 93834,
+      "tools": [
+        "run_checks",
+        "run_checks",
+        "list_files",
+        "read_file",
+        "list_files",
+        "list_files",
+        "list_files",
+        "list_files",
+        "list_files",
+        "list_files",
+        "list_files",
+        "read_file",
+        "run_checks",
+        "read_file"
+      ],
+      "answer": "The failing test is **\u201cdate parser handles leap years\u201d** (test\u202f147).  \n`src/audit.ts` writes its audit log to **`.agentbelt/audit.jsonl`**.",
+      "tokens": {
+        "id": "run-mwewlo63",
+        "at": "2026-11-13T11:38:50.139Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Run the checks with run_checks, then run them a second time to confirm the failure is stable. Then read src/audit.ts. Report the name of the failing test and the file name of the audit log that src/au",
+        "status": "completed",
+        "steps": 15,
+        "inputTokens": 41778,
+        "outputTokens": 1600,
+        "maxInputTokens": 4275,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": false,
+          "compactedCalls": 0,
+          "duplicates": 0,
+          "summarized": 0,
+          "estimatedTokensRemoved": 0
+        }
+      }
+    },
+    {
+      "task": "test-log-twice",
+      "compact": true,
+      "rep": 3,
+      "correct": true,
+      "ms": 111639,
+      "tools": [
+        "run_checks",
+        "run_checks",
+        "git_diff",
+        "list_files",
+        "list_files",
+        "read_file",
+        "list_files",
+        "search!",
+        "list_files",
+        "read_file",
+        "list_files!",
+        "read_file"
+      ],
+      "answer": "The test that fails is the one printed as\n\n```\nnot ok 147 - date parser handles leap years\n```\n\nSo the failing test is **\u201cdate parser handles leap years.\u201d**\n\n`src/audit.ts` writes its audit log to the file\n\n```\n<workspace>/.agentbelt/audit.jsonl\n```\n\ni.e., the audit log file is **`.agentbelt/audit.jsonl`.**",
+      "tokens": {
+        "id": "run-mwewo2eo",
+        "at": "2026-11-13T11:40:41.904Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Run the checks with run_checks, then run them a second time to confirm the failure is stable. Then read src/audit.ts. Report the name of the failing test and the file name of the audit log that src/au",
+        "status": "completed",
+        "steps": 13,
+        "inputTokens": 33321,
+        "outputTokens": 1951,
+        "maxInputTokens": 3338,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": true,
+          "budgetTokens": 10000,
+          "compactedCalls": 0,
+          "duplicates": 0,
+          "summarized": 0,
+          "estimatedTokensRemoved": 0
+        }
+      }
+    },
+    {
+      "task": "test-log-twice",
+      "compact": false,
+      "rep": 1,
+      "correct": false,
+      "ms": 57137,
+      "tools": [
+        "run_checks",
+        "run_checks",
+        "read_file",
+        "list_files",
+        "list_files",
+        "list_files",
+        "search!",
+        "list_files!",
+        "read_file!"
+      ],
+      "answer": null,
+      "tokens": {
+        "id": "run-mwewvfwn",
+        "at": "2026-11-13T11:46:25.991Z",
+        "model": "gpt-oss-20b-16k:latest",
+        "task": "Run the checks with run_checks, then run them a second time to confirm the failure is stable. Then read src/audit.ts. Report the name of the failing test and the file name of the audit log that src/au",
+        "status": "too_many_errors",
+        "steps": 9,
+        "inputTokens": 22152,
+        "outputTokens": 996,
+        "maxInputTokens": 3148,
+        "unreportedCalls": 0,
+        "compaction": {
+          "enabled": false,
+          "compactedCalls": 0,
+          "duplicates": 0,
+          "summarized": 0,
+          "estimatedTokensRemoved": 0
+        }
+      },
+      "rerun": true
+    }
+  ]
+}

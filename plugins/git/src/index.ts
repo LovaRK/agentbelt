@@ -28,7 +28,7 @@ const taskArg = z
 
 export default definePlugin({
   name: 'git',
-  version: '0.1.1',
+  version: '0.2.0',
   description: 'Repository status, diffs and history; changes in isolated task branches',
   permissions: { exec: ['git'], read: true },
   tools: [
