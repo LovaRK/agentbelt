@@ -66,7 +66,7 @@ You should see real `PASS` lines from your project's own lint and tests, and a r
 | VS Code          | Copilot Chat in **Agent** mode; allow the tool calls.               |
 | DeepSeek Harness | Set up with `--workspace <project>`.                                |
 | LM Studio        | Set up with `--workspace`; in each chat, turn on `mcp/agentbelt`.   |
-| Claude Desktop   | Set up with `--workspace`; quit and reopen Claude. (Not yet tested) |
+| Claude Desktop   | Quit Claude first, then set up with `--workspace`. (Not yet tested) |
 
 Every app above except Claude Desktop was tested with real tool calls, confirmed in
 agentbelt's audit log.

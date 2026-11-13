@@ -13,7 +13,9 @@ A successful connection alone doesn't count.
 | LM Studio                          | 0.4.28            | 2026-11-13 | same as above                                                                                           | ✅     | audit client `lmstudio-mcp-server-session`; model qwen3-4b-2507; plugin `mcp/agentbelt` must be switched on in the chat; needs `setup --workspace <project>` |
 | Cursor                             | 3.30.8            | 2026-11-13 | same as above                                                                                           | ✅     | audit client `cursor-vscode`; project from MCP roots (open the folder first)                                                                                 |
 
-Config only (no real tool call yet): Claude Desktop. Cursor 3.30 does not expand
+Config only (no real tool call yet): Claude Desktop. A running Claude Desktop saved its own
+settings over `claude_desktop_config.json` and dropped the agentbelt entry, so run setup while
+Claude Desktop is quit. Cursor 3.30 does not expand
 `${workspaceFolder}` in `~/.cursor/mcp.json` (the first setup pointed at a nonexistent folder), but
 with a folder open it sends MCP roots, so setup writes plain `serve`. In Cursor's "No Repo" agent
 window there is no project, and agentbelt refuses the home folder.

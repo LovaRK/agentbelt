@@ -261,7 +261,11 @@ export function vscode(home = homedir()): ClientAdapter {
   });
 }
 
-/** Claude Desktop: claude_desktop_config.json. It gives no project, so --workspace is required. */
+/**
+ * Claude Desktop: claude_desktop_config.json. It gives no project, so --workspace is required.
+ * While it runs, Claude Desktop can save its own settings over this file and drop the entry
+ * (seen 2026-11-13), so the file must be changed while Claude Desktop is quit.
+ */
 export function claudeDesktop(home = homedir()): ClientAdapter {
   const dir = join(appSupport(home), 'Claude');
   return jsonApp({
@@ -271,7 +275,8 @@ export function claudeDesktop(home = homedir()): ClientAdapter {
     key: 'mcpServers',
     needsWorkspace: true,
     detect: () => existsSync(dir),
-    reload: 'restart Claude Desktop to load it',
+    reload:
+      'run this while Claude Desktop is quit (Cmd+Q): a running Claude Desktop can overwrite the file; then open it',
     shape: (e) => ({ command: e.command, args: e.args }),
   });
 }
