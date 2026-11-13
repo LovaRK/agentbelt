@@ -57,7 +57,76 @@ export async function detectChecks(ctx: PluginContext, dir = '.'): Promise<Check
   return checks;
 }
 
-const tail = (text: string, lines = 60) => text.trimEnd().split('\n').slice(-lines).join('\n');
+/** Lines that usually mark a failure or error in test, build and lint output. */
+const FAILURE =
+  /\bnot ok\b|\bFAIL(?:ED|URE|S)?\b|\b\w*Error\b|\bpanicked\b|Traceback|✗|✖|×|^\s*E\s{2,}|^\s*●\s/;
+
+export interface ExcerptLimits {
+  /** Logs at most this many lines long are returned whole. */
+  maxLines: number;
+  /** Lines kept from the end of the log. */
+  tailLines: number;
+  /** Lines (matches plus context) kept from failures before the tail. */
+  failureLines: number;
+  /** Context kept around each failure line. */
+  before: number;
+  after: number;
+  /** Longer lines are cut to this many characters. */
+  lineChars: number;
+}
+
+const LIMITS: ExcerptLimits = {
+  maxLines: 80,
+  tailLines: 40,
+  failureLines: 60,
+  before: 2,
+  after: 4,
+  lineChars: 300,
+};
+
+/**
+ * A bounded excerpt of a failing check's output: the lines that look like failures (with a little
+ * context) plus the tail, each with its line number, and a note of what was left out. A failure in
+ * the middle of a long log stays visible, which a plain tail would hide.
+ */
+export function excerpt(text: string, limits: Partial<ExcerptLimits> = {}): string {
+  const l = { ...LIMITS, ...limits };
+  const all = text.trimEnd().split('\n');
+  const cut = (s: string) => (s.length > l.lineChars ? `${s.slice(0, l.lineChars)} …` : s);
+  if (all.length <= l.maxLines) return all.map(cut).join('\n');
+
+  const tailStart = all.length - l.tailLines;
+  const keep = new Set<number>();
+  let matches = 0;
+  let shown = 0;
+  for (let i = 0; i < tailStart; i++) {
+    if (!FAILURE.test(all[i]!)) continue;
+    matches++;
+    const range: number[] = [];
+    for (let j = Math.max(0, i - l.before); j <= Math.min(tailStart - 1, i + l.after); j++)
+      if (!keep.has(j)) range.push(j);
+    if (keep.size + range.length > l.failureLines) continue;
+    range.forEach((j) => keep.add(j));
+    shown++;
+  }
+  for (let i = tailStart; i < all.length; i++) keep.add(i);
+
+  const width = String(all.length).length;
+  const out: string[] = [];
+  let prev = -1;
+  for (const i of [...keep].sort((a, b) => a - b)) {
+    if (i > prev + 1) out.push(`… ${i - prev - 1} lines omitted (${prev + 2}–${i}) …`);
+    out.push(`${String(i + 1).padStart(width)}| ${cut(all[i]!)}`);
+    prev = i;
+  }
+  const header =
+    `[${all.length} lines; showing ${keep.size}: ` +
+    (matches
+      ? `${shown} of ${matches} failure-like lines above the tail with context, `
+      : 'no failure-like lines above the tail, ') +
+    `and the last ${l.tailLines}]`;
+  return `${header}\n${out.join('\n')}`;
+}
 const taskArg = z
   .string()
   .regex(/^[a-z0-9][a-z0-9-]{0,40}$/)
@@ -90,8 +159,9 @@ export default definePlugin({
     {
       name: 'run_checks',
       description:
-        "Runs the project's checks (all, or the named ones) and reports pass/fail with the end " +
-        'of the output of each failure. Note: this runs the project’s own scripts.',
+        "Runs the project's checks (all, or the named ones) and reports pass/fail. For each " +
+        'failure it shows the lines that look like errors (with line numbers and context) plus the ' +
+        'end of the output. Note: this runs the project’s own scripts.',
       input: z.object({
         task: taskArg,
         only: z.array(z.string().max(40)).max(10).optional().describe('e.g. ["test"]'),
@@ -115,7 +185,7 @@ export default definePlugin({
             passed: r.exitCode === 0,
             exitCode: r.exitCode,
             seconds: Math.round(r.durationMs / 100) / 10,
-            output: r.exitCode === 0 ? '' : tail(`${r.stdout}\n${r.stderr}`),
+            output: r.exitCode === 0 ? '' : excerpt(`${r.stdout}\n${r.stderr}`),
           });
         }
         const passed = results.every((r) => r.passed);
@@ -123,7 +193,7 @@ export default definePlugin({
           (r) => `${r.passed ? 'PASS' : 'FAIL'}  ${r.name}  (${r.command}, ${r.seconds}s)`,
         );
         for (const r of results.filter((x) => !x.passed))
-          lines.push(`\n--- ${r.name} output (last lines) ---\n${r.output}`);
+          lines.push(`\n--- ${r.name} output ---\n${r.output}`);
         return {
           text: `${passed ? 'All checks passed' : 'Some checks failed'}\n${lines.join('\n')}`,
           data: { passed, results },

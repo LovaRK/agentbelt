@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createAgentbeltServer } from '@agentbelt/core';
 import git from '@agentbelt/plugin-git';
-import testing from '@agentbelt/plugin-testing';
+import testing, { excerpt } from '@agentbelt/plugin-testing';
 import workflows, { decide, execute, getRun } from '@agentbelt/plugin-workflows';
 import { tempRepo } from './helpers.ts';
 
@@ -56,6 +56,74 @@ test('testing: detects and runs project checks, reporting failures', async () =>
     assert.match(r.text, /lint: 2 problems/);
     const onlyTest = await invoke('testing_run_checks', { only: ['test'] });
     assert.equal(onlyTest.data!.passed, true);
+  } finally {
+    repo.cleanup();
+  }
+});
+
+/** A 300-line TAP log whose only failure, `not ok 147`, sits in the middle. */
+function tapLog(): string {
+  const lines = ['TAP version 13'];
+  for (let n = 1; lines.length < 300 - 8; n++) {
+    if (n === 147) {
+      lines.push('not ok 147 - parses an empty config file');
+      lines.push('  ---');
+      lines.push("  error: 'Expected values to be strictly equal'");
+      lines.push('  ...');
+    } else lines.push(`ok ${n} - case ${n}`);
+  }
+  lines.push('1..292', '# tests 292', '# pass 291', '# fail 1', '# skipped 0', '# todo 0');
+  lines.push('# duration_ms 812', 'npm error Test failed.');
+  return lines.join('\n');
+}
+
+test('testing: excerpt keeps a mid-log failure, the tail and line numbers under a cap', () => {
+  const log = tapLog();
+  const total = log.split('\n').length;
+  assert.equal(total, 300);
+  const notOkLine = log.split('\n').indexOf('not ok 147 - parses an empty config file') + 1;
+  assert.ok(notOkLine > 100 && notOkLine < 200, `failure at line ${notOkLine}`);
+  const tailOnly = log.split('\n').slice(-60).join('\n');
+  assert.doesNotMatch(tailOnly, /not ok 147/); // what the old tail showed
+
+  const out = excerpt(log);
+  assert.match(
+    out,
+    new RegExp(`^ *${notOkLine}\\| not ok 147 - parses an empty config file$`, 'm'),
+  );
+  assert.match(out, /Expected values to be strictly equal/); // context after the failure
+  assert.match(out, /^ *300\| npm error Test failed\.$/m); // the tail
+  assert.match(out, /^\[300 lines; showing \d+: 1 of 1 failure-like lines/);
+  assert.match(out, /… \d+ lines omitted \(1–\d+\) …/);
+  assert.ok(out.split('\n').length <= 1 + 60 + 40 + 3, 'stays under the size cap');
+
+  // Short output is returned whole, unnumbered.
+  assert.equal(excerpt('a\nError: b\n'), 'a\nError: b');
+  // Many failures: bounded, and says how many were not shown.
+  const noisy = Array.from({ length: 500 }, (_, i) => (i % 5 ? `ok ${i}` : `not ok ${i}`)).join(
+    '\n',
+  );
+  const capped = excerpt(noisy);
+  assert.ok(capped.split('\n').length <= 1 + 60 + 40 + 40, String(capped.split('\n').length));
+  assert.match(capped, /showing \d+: \d+ of 92 failure-like lines/);
+  // Very long lines are cut.
+  assert.ok(excerpt('x'.repeat(5000)).length < 400);
+});
+
+test('testing: run_checks shows a failure from the middle of a long log', async () => {
+  const repo = tempRepo({ test: 'node tap.js' });
+  try {
+    writeFileSync(join(repo.dir, 'tap.log'), tapLog() + '\n');
+    writeFileSync(
+      join(repo.dir, 'tap.js'),
+      "process.stdout.write(require('fs').readFileSync('tap.log', 'utf8')); process.exit(1);\n",
+    );
+    const { invoke } = createAgentbeltServer({ version: 't', plugins, workspace: repo.dir });
+    const r = await invoke('testing_run_checks', { only: ['test'] });
+    assert.equal(r.data!.passed, false);
+    assert.match(r.text, /FAIL {2}test/);
+    assert.match(r.text, /\| not ok 147 - parses an empty config file/);
+    assert.match(r.text, /# fail 1/);
   } finally {
     repo.cleanup();
   }
