@@ -28,5 +28,9 @@ Release: `agentbelt@0.1.1` and the five `@agentbelt/*` packages are on npm (2026
 verification (MCP handshake, 16 tools, real `git_status`, `testing_detect` and `workflows_list`
 calls), `doctor`, and `setup --help` printing help only.
 
+Re-test on 0.1.1 (2026-11-13, same prompt, all through the audit log): Claude Code, Codex, VS Code
+(the new Copilot agent reports itself as `copilot-cli`), Cursor, LM Studio and DeepSeek Harness each
+ran `testing_run_checks` and `workflows_start repo-health`; every call succeeded.
+
 Server: official MCP TypeScript SDK `@modelcontextprotocol/server` 2.4.0. It negotiates protocol
 versions 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05 and 2024-10-07.
