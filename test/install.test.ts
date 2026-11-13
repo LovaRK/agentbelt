@@ -178,3 +178,12 @@ test('the DeepSeek block is replaced, not duplicated, and removal is exact', () 
   a.remove();
   assert.equal(readFileSync(file, 'utf8'), 'a: 1\n');
 });
+
+test('--help prints help and never runs the command', () => {
+  for (const command of ['setup', 'update', 'uninstall', 'rollback']) {
+    const r = cli([command, '--help']);
+    assert.equal(r.code, 0);
+    assert.match(r.out, /safe git, testing and workflow tools/);
+    assert.doesNotMatch(r.out, /Installing|Verifying|removed|rolled back/i);
+  }
+});

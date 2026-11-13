@@ -11,8 +11,12 @@ A successful connection alone doesn't count.
 | VS Code (Copilot Chat, Agent mode) | 1.142.0           | 2026-11-13 | same as above                                                                                           | ✅     | project folder from MCP roots (no `--workspace`); audit client `Visual Studio Code`; agent-mode tool calls approved in the chat             |
 | DeepSeek Harness                   | 0.2.2-rc.1        | 2026-11-13 | same as above                                                                                           | ✅     | audit client `dsh-mcp-client`; no MCP roots, so `setup --workspace <project>` is required                                                   |
 
-Config only (fixture-tested, no real call yet): Cursor and LM Studio (not installed on the test
-Mac) and Claude Desktop. Claude Desktop, LM Studio and DeepSeek Harness give MCP servers no project folder, so
+Config only (no real tool call yet): Cursor (not installed on the test Mac), Claude Desktop,
+and LM Studio. LM Studio 0.4.28 was checked partway on 2026-11-13: it read `~/.lmstudio/mcp.json`
+and created the plugin `mcp/agentbelt` with the command `setup` wrote, but no chat ran with the
+plugin turned on, so it never started agentbelt. Note: Bionic (also from Element Labs) shares
+`~/.lmstudio` but manages MCP servers as its own Connectors and ignores `mcp.json`; agentbelt has
+no Bionic adapter. Claude Desktop, LM Studio and DeepSeek Harness give MCP servers no project folder, so
 `setup` needs `--workspace <project>` for them; VS Code sends MCP roots; Cursor substitutes
 `${workspaceFolder}`.
 

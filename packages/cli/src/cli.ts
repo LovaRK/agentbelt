@@ -471,6 +471,9 @@ const HELP = `agentbelt ${VERSION} — safe git, testing and workflow tools for 
 `;
 
 async function main() {
+  // `agentbelt <command> --help` prints help and never runs the command (setup, update and
+  // uninstall change things).
+  if (has('--help') || has('-h')) return out(HELP);
   switch (command) {
     case 'serve': {
       // Third-party plugins load only inside the OS sandbox and only if unchanged since granted.
