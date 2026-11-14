@@ -16,6 +16,8 @@ agentbelt gives your AI coding apps the same set of safe, audited tools:
 
 You write them once, and they run everywhere through the Model Context Protocol (MCP). No API key and no extra LLM are needed: your AI app brings the model, agentbelt brings the tools.
 
+<p align="center"><img src="docs/assets/agentbelt-demo.gif" alt="agentbelt setup, then Claude Code running the checks and the repo-health workflow" width="720"></p>
+
 ```bash
 npx agentbelt@0.2.0 setup
 ```
