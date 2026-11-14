@@ -19,7 +19,7 @@ You write them once, and they run everywhere through the Model Context Protocol 
 <p align="center"><img src="docs/assets/agentbelt-demo.gif" alt="agentbelt setup, then Claude Code running the checks and the repo-health workflow" width="720"></p>
 
 ```bash
-npx agentbelt@0.2.0 setup
+npx agentbelt@0.3.0 setup
 ```
 
 `setup` takes under a minute:
