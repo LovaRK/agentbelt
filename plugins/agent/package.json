@@ -1,6 +1,6 @@
 {
   "name": "@agentbelt/plugin-agent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "agentbelt optional coding agent: a local or remote OpenAI-compatible model working through the broker",
   "license": "Apache-2.0",
   "repository": {
@@ -22,8 +22,8 @@
     "dist"
   ],
   "dependencies": {
-    "@agentbelt/core": "0.2.0",
-    "@agentbelt/plugin-tokens": "0.2.0",
+    "@agentbelt/core": "0.3.0",
+    "@agentbelt/plugin-tokens": "0.3.0",
     "zod": "4.6.7"
   },
   "engines": {

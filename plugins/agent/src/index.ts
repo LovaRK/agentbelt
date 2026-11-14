@@ -230,7 +230,7 @@ const KEEP_RUNS = 200;
 
 export default definePlugin({
   name: 'agent',
-  version: '0.2.0',
+  version: '0.3.0',
   description:
     'Optional coding agent: hands a task to the model chosen at `agentbelt agent setup`, which works through the broker.',
   permissions: { read: true, write: true, callTools: true, model: true },

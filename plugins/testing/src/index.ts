@@ -135,7 +135,7 @@ const taskArg = z
 
 export default definePlugin({
   name: 'testing',
-  version: '0.2.0',
+  version: '0.3.0',
   description: "Detects and runs the project's own typecheck, lint, build and test commands",
   permissions: { exec: ['npm', 'pnpm', 'yarn', 'swift', 'cargo', 'go', 'pytest'], read: true },
   tools: [

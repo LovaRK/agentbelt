@@ -33,7 +33,7 @@ export async function loadWorkflows(ctx: PluginContext): Promise<WorkflowDefinit
 
 const plugin = definePlugin({
   name: 'workflows',
-  version: '0.2.0',
+  version: '0.3.0',
   description: 'Multi-step recipes over the other tools, with approval gates you decide',
   permissions: { read: true, callTools: true },
   tools: [
