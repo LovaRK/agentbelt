@@ -26,13 +26,7 @@ export interface WorkflowDefinition {
 }
 
 export type StepState =
-  | 'pending'
-  | 'running'
-  | 'succeeded'
-  | 'failed'
-  | 'skipped'
-  | 'waiting_approval'
-  | 'rejected';
+  'pending' | 'running' | 'succeeded' | 'failed' | 'skipped' | 'waiting_approval' | 'rejected';
 export type RunState = 'running' | 'waiting_approval' | 'succeeded' | 'failed' | 'rejected';
 
 export interface Run {
