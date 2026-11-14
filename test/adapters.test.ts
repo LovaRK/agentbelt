@@ -9,6 +9,7 @@ import {
   appSupport,
   claudeDesktop,
   cursor,
+  goose,
   lmStudio,
   vscode,
   type ClientAdapter,
@@ -106,4 +107,42 @@ test('apps that give servers no project require --workspace; the others do not',
   mkdirSync(join(home, '.cursor'), { recursive: true });
   c.add({ command: 'a', args: ['serve', '--workspace', '/p'] });
   assert.deepEqual(json(c.configFile()!).mcpServers.agentbelt.args, ['serve', '--workspace', '/p']);
+});
+
+test('Goose: adds a marked extension under "extensions:", keeps other entries, removes exactly', () => {
+  const g = goose(home);
+  const file = join(home, '.config', 'goose', 'config.yaml');
+  const ws = { command: '/x/bin/agentbelt', args: ['serve', '--workspace', '/p'] };
+  assert.equal(g.needsWorkspace, true);
+
+  // No config yet: creates the key and the entry.
+  g.add(ws);
+  let text = readFileSync(file, 'utf8');
+  assert.match(text, /^extensions:\n {2}# >>> agentbelt/m);
+  assert.match(text, /cmd: "\/x\/bin\/agentbelt"/);
+  assert.match(text, /args: \["serve", "--workspace", "\/p"\]/);
+  assert.ok(g.isInstalled());
+
+  // Existing config with another extension: entry goes under the key; the other one stays.
+  const other =
+    'GOOSE_PROVIDER: ollama\nextensions:\n  developer:\n    enabled: true\n    name: developer\n    type: builtin\n';
+  writeFileSync(file, other);
+  g.add(ws);
+  g.add(ws); // re-adding replaces, never duplicates
+  text = readFileSync(file, 'utf8');
+  assert.equal(text.split('# >>> agentbelt').length - 1, 1);
+  assert.match(text, /developer:\n {4}enabled: true/);
+  assert.match(text, /^GOOSE_PROVIDER: ollama$/m);
+  g.remove();
+  assert.equal(readFileSync(file, 'utf8'), other);
+
+  // Only our entry: removal leaves an empty map, not a null key.
+  writeFileSync(file, 'extensions: {}\n');
+  g.add(ws);
+  g.remove();
+  assert.equal(readFileSync(file, 'utf8'), 'extensions: {}\n');
+
+  // A one-line map with content is refused, not guessed at.
+  writeFileSync(file, 'extensions: {developer: {enabled: true}}\n');
+  assert.throws(() => g.add(ws), /one-line/);
 });

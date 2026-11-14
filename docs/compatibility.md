@@ -13,14 +13,14 @@ A successful connection alone doesn't count.
 | LM Studio                          | 0.4.28            | 2026-11-13 | same as above                                                                                           | ✅     | audit client `lmstudio-mcp-server-session`; model qwen3-4b-2507; plugin `mcp/agentbelt` must be switched on in the chat; needs `setup --workspace <project>` |
 | Cursor                             | 3.30.8            | 2026-11-13 | same as above                                                                                           | ✅     | audit client `cursor-vscode`; project from MCP roots (open the folder first)                                                                                 |
 
-Config only (no real tool call yet): Claude Desktop. A running Claude Desktop saved its own
+Config only (no real tool call yet): Claude Desktop, and Goose (adapter added 2026-11-14, fixture-tested; Goose isn't installed on the test Mac). A running Claude Desktop saved its own
 settings over `claude_desktop_config.json` and dropped the agentbelt entry, so run setup while
 Claude Desktop is quit. Cursor 3.30 does not expand
 `${workspaceFolder}` in `~/.cursor/mcp.json` (the first setup pointed at a nonexistent folder), but
 with a folder open it sends MCP roots, so setup writes plain `serve`. In Cursor's "No Repo" agent
 window there is no project, and agentbelt refuses the home folder.
 Note: Bionic (also from Element Labs) shares `~/.lmstudio` but manages MCP servers as its own
-Connectors and ignores `mcp.json`; agentbelt has no Bionic adapter. Claude Desktop, LM Studio and DeepSeek Harness give MCP servers no project folder, so
+Connectors and ignores `mcp.json`; agentbelt has no Bionic adapter. Claude Desktop, LM Studio, Goose and DeepSeek Harness give MCP servers no project folder, so
 `setup` needs `--workspace <project>` for them; VS Code and Cursor (with a folder open) send MCP roots.
 
 Release: `agentbelt@0.2.0` and the six `@agentbelt/*` packages (now including

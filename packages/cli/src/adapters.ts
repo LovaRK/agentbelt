@@ -14,7 +14,15 @@ export interface Entry {
 }
 
 export interface ClientAdapter {
-  id: 'deepseek' | 'claude-code' | 'codex' | 'cursor' | 'vscode' | 'claude-desktop' | 'lm-studio';
+  id:
+    | 'deepseek'
+    | 'claude-code'
+    | 'codex'
+    | 'cursor'
+    | 'vscode'
+    | 'claude-desktop'
+    | 'lm-studio'
+    | 'goose';
   label: string;
   /** The app gives MCP servers neither roots nor the project as cwd, so `--workspace` is required. */
   needsWorkspace?: boolean;
@@ -295,6 +303,75 @@ export function lmStudio(home = homedir()): ClientAdapter {
   });
 }
 
+/**
+ * Goose: ~/.config/goose/config.yaml, an `extensions:` map. agentbelt adds a marked block under
+ * that key (creating the key if missing) and never rewrites the rest of the file. A flow-style
+ * `extensions: {...}` with content is refused rather than guessed at. Config only: not yet
+ * verified with a real Goose tool call (see docs/compatibility.md).
+ */
+export function goose(home = homedir()): ClientAdapter {
+  const dir = join(home, '.config', 'goose');
+  const file = join(dir, 'config.yaml');
+  const read = () => (existsSync(file) ? readFileSync(file, 'utf8') : '');
+  const esc = (t: string) => t.replace(/[.*+?^${}()|[\]\\`]/g, '\\$&');
+  const strip = (text: string) =>
+    text.replace(new RegExp(`\\n?[ ]*${esc(BEGIN)}[\\s\\S]*?${esc(END)}[ ]*`), '');
+  return {
+    id: 'goose',
+    label: 'Goose',
+    // Goose starts extensions in the folder it was launched from; name the project explicitly.
+    needsWorkspace: true,
+    detect: () => existsSync(dir),
+    configFile: () => file,
+    isInstalled: () => read().includes(BEGIN),
+    describe: (e) =>
+      `add an extension under "extensions:" in ${file} (restart Goose):\n${block(e)}`,
+    add(e) {
+      const text = strip(read());
+      const flow = text.match(/^extensions:[ \t]*\{(.*)\}[ \t]*$/m);
+      if (flow && flow[1].trim()) {
+        throw new Error(
+          `${file} uses a one-line "extensions: {...}" map, so it was not changed. Add the entry by hand:\n${block(e)}`,
+        );
+      }
+      let out: string;
+      if (/^extensions:[ \t]*(\{\s*\})?[ \t]*$/m.test(text)) {
+        out = text.replace(/^extensions:[ \t]*(\{\s*\})?[ \t]*$/m, `extensions:\n${block(e)}`);
+      } else {
+        out = `${text.replace(/\n*$/, text ? '\n' : '')}extensions:\n${block(e)}\n`;
+      }
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(file, out);
+    },
+    remove() {
+      if (!existsSync(file)) return;
+      // An `extensions:` key left with no entries would be null; keep it an empty map.
+      const lines = strip(read()).split('\n');
+      const i = lines.findIndex((l) => /^extensions:[ \t]*$/.test(l));
+      if (i >= 0) {
+        const next = lines.slice(i + 1).find((l) => l.trim() !== '');
+        if (!next || !/^[ \t]/.test(next)) lines[i] = 'extensions: {}';
+      }
+      const out = lines.join('\n');
+      writeFileSync(file, out);
+    },
+  };
+  function block(e: Entry) {
+    const q = (s: string) => JSON.stringify(s); // a JSON string is a valid YAML double-quoted scalar
+    return [
+      `  ${BEGIN}`,
+      '  agentbelt:',
+      '    name: agentbelt',
+      '    type: stdio',
+      '    enabled: true',
+      `    cmd: ${q(e.command)}`,
+      `    args: [${e.args.map(q).join(', ')}]`,
+      '    timeout: 300',
+      `  ${END}`,
+    ].join('\n');
+  }
+}
+
 export const allAdapters = (home = homedir()): ClientAdapter[] => [
   deepseek(home),
   claudeCode(home),
@@ -303,4 +380,5 @@ export const allAdapters = (home = homedir()): ClientAdapter[] => [
   vscode(home),
   claudeDesktop(home),
   lmStudio(home),
+  goose(home),
 ];

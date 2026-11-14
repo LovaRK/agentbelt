@@ -69,6 +69,7 @@ You should see real `PASS` lines from your project's own lint and tests, and a r
 | DeepSeek Harness | Set up with `--workspace <project>`.                                |
 | LM Studio        | Set up with `--workspace`; in each chat, turn on `mcp/agentbelt`.   |
 | Claude Desktop   | Quit Claude first, then set up with `--workspace`. (Not yet tested) |
+| Goose            | Set up with `--workspace`; restart Goose. (Not yet tested)          |
 
 Every app above except Claude Desktop was tested with real tool calls, confirmed in
 agentbelt's audit log.

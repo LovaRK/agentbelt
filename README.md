@@ -26,7 +26,7 @@ npx agentbelt@0.2.0 setup
 
 1. It installs a pinned copy, with package install scripts disabled.
 2. It **verifies the copy with real tool calls** before activating it.
-3. It finds your AI apps (Claude Code, Codex, Cursor, VS Code, DeepSeek Harness, LM Studio, Claude Desktop), shows you each config change, and backs up each config file before changing it.
+3. It finds your AI apps (Claude Code, Codex, Cursor, VS Code, DeepSeek Harness, LM Studio, Claude Desktop, Goose), shows you each config change, and backs up each config file before changing it.
 
 ## Works with
 
@@ -39,6 +39,7 @@ npx agentbelt@0.2.0 setup
 | **VS Code**          | ✅ verified 2026-11-13 with 1.142 (Copilot agent mode)                  | `servers.agentbelt` in the user `mcp.json` (project from MCP roots)                                                          |
 | Claude Desktop       | config written by `setup`; not yet verified with a real call            | `mcpServers.agentbelt` in `claude_desktop_config.json`; needs `--workspace`                                                  |
 | **LM Studio**        | ✅ verified 2026-11-13 with 0.4.28 (turn on `mcp/agentbelt` in chat)    | `mcpServers.agentbelt` in `~/.lmstudio/mcp.json`; needs `--workspace`                                                        |
+| Goose                | config written by `setup`; not yet verified with a real call            | `extensions.agentbelt` in `~/.config/goose/config.yaml`; needs `--workspace`                                                 |
 | Any MCP client       | stdio server                                                            | command `~/.local/share/agentbelt/bin/agentbelt`, args `["serve"]`                                                           |
 
 "Verified" means the app called agentbelt tools in a real session and the result was checked in agentbelt's audit log, not just that a connection was made. See [docs/compatibility.md](docs/compatibility.md).
