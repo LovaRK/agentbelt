@@ -1,6 +1,6 @@
 {
   "name": "@agentbelt/plugin-tokens",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "agentbelt token optimization: context compaction for long agent runs on small-context local models, and a measured token report",
   "license": "Apache-2.0",
   "repository": {
@@ -22,7 +22,7 @@
     "dist"
   ],
   "dependencies": {
-    "@agentbelt/core": "0.3.0",
+    "@agentbelt/core": "0.3.1",
     "zod": "4.6.7"
   },
   "engines": {

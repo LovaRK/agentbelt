@@ -61,7 +61,7 @@ export function tokensReport(runs: RunTokens[]): string {
 
 export default definePlugin({
   name: 'tokens',
-  version: '0.3.0',
+  version: '0.3.1',
   description:
     'Token report for the optional coding agent: measured input/output tokens per run, with and without context compaction.',
   permissions: { callTools: true },

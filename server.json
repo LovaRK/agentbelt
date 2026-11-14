@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.LovaRK/agentbelt",
+  "title": "agentbelt",
+  "description": "Safe, audited git, test and workflow tools for any MCP coding client. Never pushes; you approve.",
+  "repository": {
+    "url": "https://github.com/LovaRK/agentbelt",
+    "source": "github"
+  },
+  "version": "0.3.1",
+  "websiteUrl": "https://lovark.github.io/agentbelt/",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "agentbelt",
+      "version": "0.3.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "serve"
+        }
+      ]
+    }
+  ]
+}
