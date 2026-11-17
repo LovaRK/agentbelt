@@ -1,6 +1,6 @@
 # agentbelt
 
-[![npm](https://img.shields.io/npm/v/agentbelt)](https://www.npmjs.com/package/agentbelt) [![ci](https://github.com/LovaRK/agentbelt/actions/workflows/ci.yml/badge.svg)](https://github.com/LovaRK/agentbelt/actions/workflows/ci.yml) [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![npm](https://img.shields.io/npm/v/agentbelt)](https://www.npmjs.com/package/agentbelt) [![ci](https://github.com/LovaRK/agentbelt/actions/workflows/ci.yml/badge.svg)](https://github.com/LovaRK/agentbelt/actions/workflows/ci.yml) [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE) [![agentbelt MCP on mcprush](https://mcprush.com/badge/agentbelt-mcp/score.svg)](https://mcprush.com/to/agentbelt-mcp?ref=badge)
 
 <p align="center"><img src="docs/assets/agentbelt-launch.png" alt="agentbelt: one install, every AI coding agent" width="820"></p>
 
@@ -19,7 +19,7 @@ You write them once, and they run everywhere through the Model Context Protocol 
 <p align="center"><img src="docs/assets/agentbelt-demo.gif" alt="agentbelt setup, then Claude Code running the checks and the repo-health workflow" width="720"></p>
 
 ```bash
-npx agentbelt@0.3.0 setup
+npx agentbelt@0.3.1 setup
 ```
 
 `setup` takes under a minute:
