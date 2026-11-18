@@ -1,12 +1,10 @@
 # Publishes to npm with provenance when a maintainer pushes a version tag (v<version>). Nothing
 # publishes automatically from main.
 #
-# Authentication:
-# - First release: npm trusted publishing can only be set up for packages that already exist, so
-#   the first publish uses the NPM_TOKEN repository secret (a granular token limited to the
-#   agentbelt packages and the @agentbelt scope).
-# - Later releases: configure this workflow (release.yml) as the trusted publisher of each package
-#   on npmjs.com, then delete the NPM_TOKEN secret. npm then uses short-lived OIDC credentials.
+# Authentication: npm trusted publishing (OIDC). Each package on npmjs.com lists this workflow
+# (LovaRK/agentbelt, release.yml) as its trusted publisher, so no npm token is stored anywhere;
+# npm issues short-lived credentials to this job. A new package must be published once by hand
+# before a trusted publisher can be added to it.
 name: release
 on:
   push:
@@ -48,5 +46,3 @@ jobs:
             fi
             (cd "$w" && npm publish --provenance --access public)
           done
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
