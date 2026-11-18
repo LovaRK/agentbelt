@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 20/22 milestones (91% by evidence). Updated 2026-11-18T20:07:02.352Z.
+Verified 21/22 milestones (95% by evidence). Updated 2026-11-18T20:19:31.722Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -23,7 +23,7 @@ Verified 20/22 milestones (91% by evidence). Updated 2026-11-18T20:07:02.352Z.
 | M16 | Optional coding-agent plugin | VERIFIED |  |  | commit 935de89; test/agent.test.ts 7/7; real local call 2026-11-12: Ollama gpt-oss-20b-16k:latest via agent_run on a demo npm repo, completed in 3 steps (read_f |
 | M17 | Opt-in scheduler and triggers | VERIFIED |  |  | commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44 |
 | M18 | Context compaction and usage report for the coding agent (0.2.0) | VERIFIED |  | M16 | commits 9f4886a, cd1a40b; 55/55 tests; measured with gpt-oss-20b-16k on Ollama (docs/token-optimization.md, docs/benchmarks/compaction-gpt-oss-20b-16k.json); re |
-| M19 | Claude Desktop: real tool call (issue 8) | IMPLEMENTED_UNVERIFIED |  |  | Adapter written and fixture-tested; setup must run while Claude Desktop is quit (it rewrites its config while running). No real call yet: docs/compatibility.md  |
+| M19 | Claude Desktop: real tool call (issue 8) | VERIFIED |  |  | Real call 2026-11-18 with agentbelt 0.3.3: Claude Desktop 6.6395.0 started the server from claude_desktop_config.json (pids 26388/26429, parent /Applications/Cl |
 | M20 | Goose: real tool call (issue 9) | VERIFIED |  |  | goose-cli 1.59.0 (Homebrew block-goose-cli, user-approved install) with local Ollama gpt-oss-20b-16k: real testing_run_checks via agentbelt, audit client=goose- |
 | M21 | Windows support (issue 10) | NOT_STARTED |  |  |  |
 
@@ -126,9 +126,10 @@ Verified 20/22 milestones (91% by evidence). Updated 2026-11-18T20:07:02.352Z.
 - Tests: test/tokens.test.ts
 - 2026-11-13T12:54 (claude): commits 9f4886a, cd1a40b; 55/55 tests; measured with gpt-oss-20b-16k on Ollama (docs/token-optimization.md, docs/benchmarks/compaction-gpt-oss-20b-16k.json); real LM Studio agent_run calls 2026-11-13 recorded in audit; agentbelt@0.2.0 and @agentbelt/plugin-tokens@0.2.0 on npm, clean npx install reports 0.2.0
 
-### M19 Claude Desktop: real tool call (issue 8) — IMPLEMENTED_UNVERIFIED
+### M19 Claude Desktop: real tool call (issue 8) — VERIFIED
 - Done when: a real Claude Desktop chat calls an agentbelt tool, seen in the audit log
 - 2026-11-18T17:01 (cli): Adapter written and fixture-tested; setup must run while Claude Desktop is quit (it rewrites its config while running). No real call yet: docs/compatibility.md says config only
+- 2026-11-18T20:19 (cli): Real call 2026-11-18 with agentbelt 0.3.3: Claude Desktop 6.6395.0 started the server from claude_desktop_config.json (pids 26388/26429, parent /Applications/Claude.app/Contents/MacOS/Claude; its log says 'Connected to agentbelt (19 tools)'); git_status called from the desktop app's Code tab, audit client=local-agent-mode-agentbelt ok 2026-11-18T20:19:09.114Z. A Chat-tab call was asked for twice but no tools/call was logged.
 
 ### M20 Goose: real tool call (issue 9) — VERIFIED
 - Done when: a real Goose session calls an agentbelt tool

@@ -418,16 +418,21 @@
     {
       "id": "M19",
       "title": "Claude Desktop: real tool call (issue 8)",
-      "status": "IMPLEMENTED_UNVERIFIED",
+      "status": "VERIFIED",
       "criteria": "a real Claude Desktop chat calls an agentbelt tool, seen in the audit log",
       "evidence": [
         {
           "at": "2026-11-18T17:01:22.532Z",
           "text": "Adapter written and fixture-tested; setup must run while Claude Desktop is quit (it rewrites its config while running). No real call yet: docs/compatibility.md says config only",
           "by": "cli"
+        },
+        {
+          "at": "2026-11-18T20:19:31.433Z",
+          "text": "Real call 2026-11-18 with agentbelt 0.3.3: Claude Desktop 6.6395.0 started the server from claude_desktop_config.json (pids 26388/26429, parent /Applications/Claude.app/Contents/MacOS/Claude; its log says 'Connected to agentbelt (19 tools)'); git_status called from the desktop app's Code tab, audit client=local-agent-mode-agentbelt ok 2026-11-18T20:19:09.114Z. A Chat-tab call was asked for twice but no tools/call was logged.",
+          "by": "cli"
         }
       ],
-      "updatedAt": "2026-11-18T17:01:22.533Z"
+      "updatedAt": "2026-11-18T20:19:31.433Z"
     },
     {
       "id": "M20",
@@ -528,7 +533,8 @@
       "id": "B3",
       "date": "2026-11-18",
       "text": "Claude Desktop check needs Claude Desktop quit, which ends any session running inside it; run it from a terminal",
-      "item": "M19"
+      "item": "M19",
+      "resolvedAt": "2026-11-18T20:19:31.538Z"
     }
   ],
   "current": {
@@ -545,8 +551,13 @@
       "at": "2026-11-18T20:07:02.352Z",
       "note": "0.3.3 published to npm via trusted publishing; clean install verified",
       "commit": "d707be2"
+    },
+    {
+      "at": "2026-11-18T20:19:31.721Z",
+      "note": "M19 Claude Desktop verified via the desktop app's own server",
+      "commit": "3d8f7a8"
     }
   ],
-  "updatedAt": "2026-11-18T20:07:02.352Z",
+  "updatedAt": "2026-11-18T20:19:31.722Z",
   "version": "0.1.0"
 }
