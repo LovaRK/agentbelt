@@ -62,18 +62,18 @@ You should see real `PASS` lines from your project's own lint and tests, and a r
 
 ### App notes
 
-| App              | Tip                                                                 |
-| ---------------- | ------------------------------------------------------------------- |
-| Claude Code      | Works in any project folder.                                        |
-| Codex            | Codex asks before running tools that change things; approve them.   |
-| Cursor           | Open a folder first (File → Open Folder). Use Agent mode.           |
-| VS Code          | Copilot Chat in **Agent** mode; allow the tool calls.               |
-| DeepSeek Harness | Set up with `--workspace <project>`.                                |
-| LM Studio        | Set up with `--workspace`; in each chat, turn on `mcp/agentbelt`.   |
-| Claude Desktop   | Quit Claude first, then set up with `--workspace`. (Not yet tested) |
-| Goose            | Set up with `--workspace`; restart Goose. Verified 2026-11-18.      |
+| App              | Tip                                                                     |
+| ---------------- | ----------------------------------------------------------------------- |
+| Claude Code      | Works in any project folder.                                            |
+| Codex            | Codex asks before running tools that change things; approve them.       |
+| Cursor           | Open a folder first (File → Open Folder). Use Agent mode.               |
+| VS Code          | Copilot Chat in **Agent** mode; allow the tool calls.                   |
+| DeepSeek Harness | Set up with `--workspace <project>`.                                    |
+| LM Studio        | Set up with `--workspace`; in each chat, turn on `mcp/agentbelt`.       |
+| Claude Desktop   | Quit Claude first, then set up with `--workspace`. Verified 2026-11-18. |
+| Goose            | Set up with `--workspace`; restart Goose. Verified 2026-11-18.          |
 
-Every app above except Claude Desktop was tested with real tool calls, confirmed in
+Every app above was tested with real tool calls, confirmed in
 agentbelt's audit log.
 
 ## What your AI gets
