@@ -7,13 +7,13 @@
     "url": "https://github.com/LovaRK/agentbelt",
     "source": "github"
   },
-  "version": "0.3.2",
+  "version": "0.3.3",
   "websiteUrl": "https://lovark.github.io/agentbelt/",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "agentbelt",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "transport": {
         "type": "stdio"
       },
