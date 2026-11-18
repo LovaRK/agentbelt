@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 19/22 milestones (86% by evidence). Updated 2026-11-18T17:01:23.089Z.
+Verified 20/22 milestones (91% by evidence). Updated 2026-11-18T17:09:49.391Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -24,7 +24,7 @@ Verified 19/22 milestones (86% by evidence). Updated 2026-11-18T17:01:23.089Z.
 | M17 | Opt-in scheduler and triggers | VERIFIED |  |  | commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44 |
 | M18 | Context compaction and usage report for the coding agent (0.2.0) | VERIFIED |  | M16 | commits 9f4886a, cd1a40b; 55/55 tests; measured with gpt-oss-20b-16k on Ollama (docs/token-optimization.md, docs/benchmarks/compaction-gpt-oss-20b-16k.json); re |
 | M19 | Claude Desktop: real tool call (issue 8) | IMPLEMENTED_UNVERIFIED |  |  | Adapter written and fixture-tested; setup must run while Claude Desktop is quit (it rewrites its config while running). No real call yet: docs/compatibility.md  |
-| M20 | Goose: real tool call (issue 9) | IMPLEMENTED_UNVERIFIED |  |  | Adapter b3662f6, fixture-tested; Goose not installed on this Mac |
+| M20 | Goose: real tool call (issue 9) | VERIFIED |  |  | goose-cli 1.59.0 (Homebrew block-goose-cli, user-approved install) with local Ollama gpt-oss-20b-16k: real testing_run_checks via agentbelt, audit client=goose- |
 | M21 | Windows support (issue 10) | NOT_STARTED |  |  |  |
 
 ## Details
@@ -130,9 +130,11 @@ Verified 19/22 milestones (86% by evidence). Updated 2026-11-18T17:01:23.089Z.
 - Done when: a real Claude Desktop chat calls an agentbelt tool, seen in the audit log
 - 2026-11-18T17:01 (cli): Adapter written and fixture-tested; setup must run while Claude Desktop is quit (it rewrites its config while running). No real call yet: docs/compatibility.md says config only
 
-### M20 Goose: real tool call (issue 9) — IMPLEMENTED_UNVERIFIED
+### M20 Goose: real tool call (issue 9) — VERIFIED
 - Done when: a real Goose session calls an agentbelt tool
+- Files: packages/core/src/server.ts, plugins/testing/src/index.ts, test/plugins.test.ts, README.md, docs/compatibility.md, docs/index.md
 - 2026-11-18T17:01 (cli): Adapter b3662f6, fixture-tested; Goose not installed on this Mac
+- 2026-11-18T17:09 (cli): goose-cli 1.59.0 (Homebrew block-goose-cli, user-approved install) with local Ollama gpt-oss-20b-16k: real testing_run_checks via agentbelt, audit client=goose-cli ok 2026-11-18T17:09:23.684Z (PASS lint, PASS test). Earlier calls exposed empty/invented optional args; fixed: server drops ''/null optional args, testing tools name unknown tasks. Fix is in the repo, not yet released (0.3.1 on npm lacks it)
 
 ### M21 Windows support (issue 10) — NOT_STARTED
 - Done when: setup, serve and tests pass on Windows

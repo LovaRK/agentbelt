@@ -54,6 +54,15 @@ test('testing: detects and runs project checks, reporting failures', async () =>
     assert.match(r.text, /FAIL {2}lint/);
     assert.match(r.text, /PASS {2}test/);
     assert.match(r.text, /lint: 2 problems/);
+    // Empty optional fields (as some models send them) count as absent; unknown tasks are named.
+    const blanks = await invoke('testing_run_checks', {
+      task: '',
+      only: ['test'],
+      timeoutMinutes: null,
+    });
+    assert.equal(blanks.data!.passed, true, blanks.text);
+    assert.match((await invoke('testing_run_checks', { task: 'main' })).text, /no task main/);
+    assert.match((await invoke('testing_detect', { task: 'default' })).text, /no task default/);
     const onlyTest = await invoke('testing_run_checks', { only: ['test'] });
     assert.equal(onlyTest.data!.passed, true);
   } finally {

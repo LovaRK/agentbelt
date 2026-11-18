@@ -12,6 +12,14 @@ export interface Check {
 
 const ORDER = ['typecheck', 'lint', 'build', 'test'];
 const taskDir = (id?: string) => (id ? `.agentbelt/worktrees/${id}` : '.');
+/** An error for a task id that has no worktree, or null if it exists (or no task was given). */
+async function missingTask(ctx: PluginContext, task?: string): Promise<string | null> {
+  if (!task) return null;
+  const tasks = await ctx.listFiles('.agentbelt/worktrees');
+  return tasks.includes(task)
+    ? null
+    : `no task ${task}${tasks.length ? ` (tasks: ${tasks.join(', ')})` : ''}; omit "task" to use the main checkout`;
+}
 
 async function read(ctx: PluginContext, path: string): Promise<string | null> {
   try {
@@ -145,6 +153,8 @@ export default definePlugin({
       input: z.object({ task: taskArg }),
       readOnly: true,
       async run({ task }, ctx) {
+        const missing = await missingTask(ctx, task);
+        if (missing) return fail(missing);
         const checks = await detectChecks(ctx, taskDir(task));
         if (!checks.length)
           return ok(
@@ -168,6 +178,8 @@ export default definePlugin({
         timeoutMinutes: z.number().int().min(1).max(60).default(15),
       }),
       async run({ task, only, timeoutMinutes }, ctx) {
+        const missing = await missingTask(ctx, task);
+        if (missing) return fail(missing);
         const dir = taskDir(task);
         const checks = (await detectChecks(ctx, dir)).filter(
           (c) => !only?.length || only.includes(c.name),

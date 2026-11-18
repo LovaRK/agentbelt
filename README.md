@@ -39,7 +39,7 @@ npx agentbelt@0.3.1 setup
 | **VS Code**          | ✅ verified 2026-11-13 with 1.142 (Copilot agent mode)                  | `servers.agentbelt` in the user `mcp.json` (project from MCP roots)                                                          |
 | Claude Desktop       | config written by `setup`; not yet verified with a real call            | `mcpServers.agentbelt` in `claude_desktop_config.json`; needs `--workspace`                                                  |
 | **LM Studio**        | ✅ verified 2026-11-13 with 0.4.28 (turn on `mcp/agentbelt` in chat)    | `mcpServers.agentbelt` in `~/.lmstudio/mcp.json`; needs `--workspace`                                                        |
-| Goose                | config written by `setup`; not yet verified with a real call            | `extensions.agentbelt` in `~/.config/goose/config.yaml`; needs `--workspace`                                                 |
+| **Goose**            | ✅ verified 2026-11-18 with goose-cli 1.59.0 (local Ollama model)       | `extensions.agentbelt` in `~/.config/goose/config.yaml`; needs `--workspace`                                                 |
 | Any MCP client       | stdio server                                                            | command `~/.local/share/agentbelt/bin/agentbelt`, args `["serve"]`                                                           |
 
 "Verified" means the app called agentbelt tools in a real session and the result was checked in agentbelt's audit log, not just that a connection was made. See [docs/compatibility.md](docs/compatibility.md).
@@ -148,7 +148,7 @@ To write one, see [docs/plugins.md](docs/plugins.md). A plugin is a name, its pe
 
 Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). Good first contributions include:
 
-- an adapter for another MCP client (for example Goose);
+- an adapter for another MCP client (for example Zed or Continue);
 - a new skill;
 - a test runner for another ecosystem.
 

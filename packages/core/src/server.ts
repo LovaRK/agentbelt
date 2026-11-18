@@ -143,7 +143,12 @@ export function createAgentbeltServer(options: ServerOptions) {
     if (!entry) return { text: `unknown tool ${id}`, isError: true };
     const ws = await resolveWorkspace();
     audit ??= new AuditLog(ws, client);
-    const checked = await entry.tool.input['~standard'].validate(args);
+    // Some clients and smaller models send "" or null for optional fields they mean to leave out
+    // (seen with Goose + a local model). Treat those as absent; required fields still fail.
+    const given = Object.fromEntries(
+      Object.entries(args ?? {}).filter(([, v]) => v !== '' && v !== null),
+    );
+    const checked = await entry.tool.input['~standard'].validate(given);
     if (checked.issues)
       return {
         text: `invalid arguments: ${checked.issues.map((i: { message: string; path?: readonly unknown[] }) => `${(i.path ?? []).join('.')} ${i.message}`.trim()).join('; ')}`,
