@@ -127,9 +127,9 @@ before(() => {
         [
           '@echo off',
           `>>"${join(dir, 'calls.log')}" echo ${c} %*`,
-          `if "%1 %2"=="mcp add" type nul > "${on}"`,
-          `if "%1 %2"=="mcp remove" if exist "${on}" del "${on}"`,
-          `if "%1 %2"=="mcp get" if not exist "${on}" exit /b 1`,
+          `if "%~1 %~2"=="mcp add" type nul > "${on}"`,
+          `if "%~1 %~2"=="mcp remove" if exist "${on}" del "${on}"`,
+          `if "%~1 %~2"=="mcp get" if not exist "${on}" exit /b 1`,
           'exit /b 0',
           '',
         ].join('\r\n'),

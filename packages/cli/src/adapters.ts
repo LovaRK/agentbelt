@@ -49,7 +49,9 @@ function run(cmd: string, args: string[]): { ok: boolean; out: string } {
     const words = [file, ...args];
     if (words.some((w) => /["%!^&|<>\r\n]/.test(w)))
       return { ok: false, out: `can't pass ${words.join(' ')} through cmd.exe safely` };
-    argv = ['/d', '/s', '/c', `"${words.map((w) => `"${w}"`).join(' ')}"`];
+    // Quote only words with spaces (an npm shim passes them on to node unchanged).
+    const quote = (w: string) => (/\s/.test(w) || !w ? `"${w}"` : w);
+    argv = ['/d', '/s', '/c', `"${words.map(quote).join(' ')}"`];
     file = process.env.COMSPEC ?? 'cmd.exe';
     verbatim = true;
   }
