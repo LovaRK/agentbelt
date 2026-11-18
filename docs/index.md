@@ -7,6 +7,8 @@ description: One install. Every AI agent. Safe tools for your real dev work.
 
 ![agentbelt: one install, every AI coding agent](assets/agentbelt-launch.png)
 
+[![agentbelt MCP on mcprush](https://mcprush.com/badge/agentbelt-mcp/score.svg)](https://mcprush.com/to/agentbelt-mcp?ref=badge)
+
 **One install. Every AI agent. Safe tools for your real dev work.**
 
 agentbelt gives the AI apps you already use (Claude Code, Codex, Cursor, VS Code, DeepSeek

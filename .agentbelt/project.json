@@ -303,7 +303,7 @@
     },
     {
       "id": "M15",
-      "title": "Adapters: Cursor, VS Code, Claude Desktop, LM Studio",
+      "title": "Adapters: Cursor, VS Code, LM Studio (real calls)",
       "status": "VERIFIED",
       "criteria": "fixture tests pass; real calls only where the app is installed and approved",
       "evidence": [
@@ -328,7 +328,7 @@
           "by": "claude"
         }
       ],
-      "updatedAt": "2026-11-13T05:27:48.990Z",
+      "updatedAt": "2026-11-18T17:01:22.312Z",
       "files": [
         "packages/cli/src/adapters.ts",
         "test/adapters.test.ts",
@@ -414,6 +414,42 @@
       "tests": [
         "test/tokens.test.ts"
       ]
+    },
+    {
+      "id": "M19",
+      "title": "Claude Desktop: real tool call (issue 8)",
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "criteria": "a real Claude Desktop chat calls an agentbelt tool, seen in the audit log",
+      "evidence": [
+        {
+          "at": "2026-11-18T17:01:22.532Z",
+          "text": "Adapter written and fixture-tested; setup must run while Claude Desktop is quit (it rewrites its config while running). No real call yet: docs/compatibility.md says config only",
+          "by": "cli"
+        }
+      ],
+      "updatedAt": "2026-11-18T17:01:22.533Z"
+    },
+    {
+      "id": "M20",
+      "title": "Goose: real tool call (issue 9)",
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "criteria": "a real Goose session calls an agentbelt tool",
+      "evidence": [
+        {
+          "at": "2026-11-18T17:01:22.753Z",
+          "text": "Adapter b3662f6, fixture-tested; Goose not installed on this Mac",
+          "by": "cli"
+        }
+      ],
+      "updatedAt": "2026-11-18T17:01:22.753Z"
+    },
+    {
+      "id": "M21",
+      "title": "Windows support (issue 10)",
+      "status": "NOT_STARTED",
+      "criteria": "setup, serve and tests pass on Windows",
+      "evidence": [],
+      "updatedAt": "2026-11-18T17:01:22.862Z"
     }
   ],
   "decisions": [
@@ -467,11 +503,17 @@
       "text": "Release needs approvals: GitHub owner, commit author name, push, npm publish, Changesets install",
       "item": "M12",
       "resolvedAt": "2026-11-13T05:43:35.526Z"
+    },
+    {
+      "id": "B3",
+      "date": "2026-11-18",
+      "text": "Claude Desktop check needs Claude Desktop quit, which ends any session running inside it; run it from a terminal",
+      "item": "M19"
     }
   ],
   "current": {
-    "item": "M15",
-    "note": "Verify DeepSeek: user sends the test prompt; check .agentbelt/audit.jsonl in the demo project for a non-claude/codex client"
+    "item": "M19",
+    "note": "Next: verify Claude Desktop from a terminal (quit the app, setup, reopen, one chat prompt)"
   },
   "checkpoints": [
     {
@@ -480,6 +522,6 @@
       "commit": "faf725d"
     }
   ],
-  "updatedAt": "2026-11-13T12:54:19.634Z",
+  "updatedAt": "2026-11-18T17:01:23.089Z",
   "version": "0.1.0"
 }

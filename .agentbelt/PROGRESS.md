@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 19/19 milestones (100% by evidence). Updated 2026-11-13T12:54:19.634Z.
+Verified 19/22 milestones (86% by evidence). Updated 2026-11-18T17:01:23.089Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -19,10 +19,13 @@ Verified 19/19 milestones (100% by evidence). Updated 2026-11-13T12:54:19.634Z.
 | M12 | Documentation and release | VERIFIED |  | M8, M9, M10, M11 | Public repo github.com/LovaRK/agentbelt; CI green (ubuntu+macOS x Node 22/24) and CodeQL green; all 6 packages published to npm as 0.1.0 on 2026-11-13 (agentbel |
 | M13 | Project control system (status, resume, progress, context, model routing) | VERIFIED |  | M1 | test/project-state.test.ts 7/7 (persistence, crash recovery, 3-process concurrency + stale lock, evidence rule, context thresholds, model discovery doubles + ro |
 | M14 | Linux bubblewrap sandbox backend | VERIFIED |  |  | GitHub CI run https://github.com/LovaRK/agentbelt/actions/runs/43308961942 (commit 5b701db): ubuntu-latest Node 22+24 with AGENTBELT_REQUIRE_SANDBOX=1, bubblewr |
-| M15 | Adapters: Cursor, VS Code, Claude Desktop, LM Studio | VERIFIED |  |  | Real calls on 2026-11-13: VS Code 1.142.0 ('Visual Studio Code'), LM Studio 0.4.28 ('lmstudio-mcp-server-session'), Cursor 3.30.8 ('cursor-vscode', run 20261113 |
+| M15 | Adapters: Cursor, VS Code, LM Studio (real calls) | VERIFIED |  |  | Real calls on 2026-11-13: VS Code 1.142.0 ('Visual Studio Code'), LM Studio 0.4.28 ('lmstudio-mcp-server-session'), Cursor 3.30.8 ('cursor-vscode', run 20261113 |
 | M16 | Optional coding-agent plugin | VERIFIED |  |  | commit 935de89; test/agent.test.ts 7/7; real local call 2026-11-12: Ollama gpt-oss-20b-16k:latest via agent_run on a demo npm repo, completed in 3 steps (read_f |
 | M17 | Opt-in scheduler and triggers | VERIFIED |  |  | commit 9d0bc25; test/scheduler.test.ts 6/6 incl. real repo-health runs via tick() in a temp git repo, audit client agentbelt-scheduler; full suite 44/44 |
 | M18 | Context compaction and usage report for the coding agent (0.2.0) | VERIFIED |  | M16 | commits 9f4886a, cd1a40b; 55/55 tests; measured with gpt-oss-20b-16k on Ollama (docs/token-optimization.md, docs/benchmarks/compaction-gpt-oss-20b-16k.json); re |
+| M19 | Claude Desktop: real tool call (issue 8) | IMPLEMENTED_UNVERIFIED |  |  | Adapter written and fixture-tested; setup must run while Claude Desktop is quit (it rewrites its config while running). No real call yet: docs/compatibility.md  |
+| M20 | Goose: real tool call (issue 9) | IMPLEMENTED_UNVERIFIED |  |  | Adapter b3662f6, fixture-tested; Goose not installed on this Mac |
+| M21 | Windows support (issue 10) | NOT_STARTED |  |  |  |
 
 ## Details
 
@@ -95,7 +98,7 @@ Verified 19/19 milestones (100% by evidence). Updated 2026-11-13T12:54:19.634Z.
 - 2026-11-12T20:56 (cli): commit 1d8d58e; bubblewrapArgs unit test passes on macOS (sandbox.test.ts 6/6 incl. fail-closed); NOT run on Linux: no local Linux VM/container running, no remote so CI has never run
 - 2026-11-12T21:25 (cli): GitHub CI run https://github.com/LovaRK/agentbelt/actions/runs/43308961942 (commit 5b701db): ubuntu-latest Node 22+24 with AGENTBELT_REQUIRE_SANDBOX=1, bubblewrap backend active; malicious-plugin test blocked file read/write, shell, network, secrets. Not run on other distributions.
 
-### M15 Adapters: Cursor, VS Code, Claude Desktop, LM Studio — VERIFIED
+### M15 Adapters: Cursor, VS Code, LM Studio (real calls) — VERIFIED
 - Done when: fixture tests pass; real calls only where the app is installed and approved
 - Files: packages/cli/src/adapters.ts, test/adapters.test.ts, docs/compatibility.md, README.md
 - Tests: test/adapters.test.ts
@@ -122,3 +125,15 @@ Verified 19/19 milestones (100% by evidence). Updated 2026-11-13T12:54:19.634Z.
 - Files: plugins/tokens/src/compact.ts, plugins/tokens/src/index.ts, plugins/agent/src/index.ts, packages/cli/src/cli.ts, bench/compaction.ts
 - Tests: test/tokens.test.ts
 - 2026-11-13T12:54 (claude): commits 9f4886a, cd1a40b; 55/55 tests; measured with gpt-oss-20b-16k on Ollama (docs/token-optimization.md, docs/benchmarks/compaction-gpt-oss-20b-16k.json); real LM Studio agent_run calls 2026-11-13 recorded in audit; agentbelt@0.2.0 and @agentbelt/plugin-tokens@0.2.0 on npm, clean npx install reports 0.2.0
+
+### M19 Claude Desktop: real tool call (issue 8) — IMPLEMENTED_UNVERIFIED
+- Done when: a real Claude Desktop chat calls an agentbelt tool, seen in the audit log
+- 2026-11-18T17:01 (cli): Adapter written and fixture-tested; setup must run while Claude Desktop is quit (it rewrites its config while running). No real call yet: docs/compatibility.md says config only
+
+### M20 Goose: real tool call (issue 9) — IMPLEMENTED_UNVERIFIED
+- Done when: a real Goose session calls an agentbelt tool
+- 2026-11-18T17:01 (cli): Adapter b3662f6, fixture-tested; Goose not installed on this Mac
+
+### M21 Windows support (issue 10) — NOT_STARTED
+- Done when: setup, serve and tests pass on Windows
+
