@@ -1,6 +1,6 @@
 # Progress (generated — edit with `agentbelt progress`)
 
-Verified 21/22 milestones (95% by evidence). Updated 2026-11-18T20:19:31.722Z.
+Verified 22/22 milestones (100% by evidence). Updated 2026-11-18T22:58:46.554Z.
 
 | ID | Title | Status | Owner | Depends on | Latest evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -25,7 +25,7 @@ Verified 21/22 milestones (95% by evidence). Updated 2026-11-18T20:19:31.722Z.
 | M18 | Context compaction and usage report for the coding agent (0.2.0) | VERIFIED |  | M16 | commits 9f4886a, cd1a40b; 55/55 tests; measured with gpt-oss-20b-16k on Ollama (docs/token-optimization.md, docs/benchmarks/compaction-gpt-oss-20b-16k.json); re |
 | M19 | Claude Desktop: real tool call (issue 8) | VERIFIED |  |  | Real call 2026-11-18 with agentbelt 0.3.3: Claude Desktop 6.6395.0 started the server from claude_desktop_config.json (pids 26388/26429, parent /Applications/Cl |
 | M20 | Goose: real tool call (issue 9) | VERIFIED |  |  | goose-cli 1.59.0 (Homebrew block-goose-cli, user-approved install) with local Ollama gpt-oss-20b-16k: real testing_run_checks via agentbelt, audit client=goose- |
-| M21 | Windows support (issue 10) | NOT_STARTED |  |  |  |
+| M21 | Windows support (issue 10) | VERIFIED |  |  | Real Windows check 2026-11-18 on machine SAANVIKA via Codex CLI 0.162.0-alpha.17.2: real git_status tools/call, audit 2026-11-18T22:50:27.886Z client=codex-mcp- |
 
 ## Details
 
@@ -137,6 +137,6 @@ Verified 21/22 milestones (95% by evidence). Updated 2026-11-18T20:19:31.722Z.
 - 2026-11-18T17:01 (cli): Adapter b3662f6, fixture-tested; Goose not installed on this Mac
 - 2026-11-18T17:09 (cli): goose-cli 1.59.0 (Homebrew block-goose-cli, user-approved install) with local Ollama gpt-oss-20b-16k: real testing_run_checks via agentbelt, audit client=goose-cli ok 2026-11-18T17:09:23.684Z (PASS lint, PASS test). Earlier calls exposed empty/invented optional args; fixed: server drops ''/null optional args, testing tools name unknown tasks. Fix is in the repo, not yet released (0.3.1 on npm lacks it)
 
-### M21 Windows support (issue 10) — NOT_STARTED
+### M21 Windows support (issue 10) — VERIFIED
 - Done when: setup, serve and tests pass on Windows
-
+- 2026-11-18T22:58 (cli): Real Windows check 2026-11-18 on machine SAANVIKA via Codex CLI 0.162.0-alpha.17.2: real git_status tools/call, audit 2026-11-18T22:50:27.886Z client=codex-mcp-client ok=true, branch windows-support at cf2240b. CI on GitHub Windows runners (Node 22 and 24): 56/56 tests pass; macOS and Linux pass. Windows limits: third-party plugins refused (no OS sandbox); pnpm/yarn/find/ls/pwd/mkdir cannot run (no shell). Recorded on the Mac from this evidence; the Windows clone's local M21 entry was never pushed.

@@ -464,10 +464,16 @@
     {
       "id": "M21",
       "title": "Windows support (issue 10)",
-      "status": "NOT_STARTED",
+      "status": "VERIFIED",
       "criteria": "setup, serve and tests pass on Windows",
-      "evidence": [],
-      "updatedAt": "2026-11-18T17:01:22.862Z"
+      "evidence": [
+        {
+          "at": "2026-11-18T22:58:42.453Z",
+          "text": "Real Windows check 2026-11-18 on machine SAANVIKA via Codex CLI 0.162.0-alpha.17.2: real git_status tools/call, audit 2026-11-18T22:50:27.886Z client=codex-mcp-client ok=true, branch windows-support at cf2240b. CI on GitHub Windows runners (Node 22 and 24): 56/56 tests pass; macOS and Linux pass. Windows limits: third-party plugins refused (no OS sandbox); pnpm/yarn/find/ls/pwd/mkdir cannot run (no shell). Recorded on the Mac from this evidence; the Windows clone's local M21 entry was never pushed.",
+          "by": "cli"
+        }
+      ],
+      "updatedAt": "2026-11-18T22:58:42.454Z"
     }
   ],
   "decisions": [
@@ -538,8 +544,7 @@
     }
   ],
   "current": {
-    "item": "M19",
-    "next": "M21"
+    "item": "M21"
   },
   "checkpoints": [
     {
@@ -556,8 +561,13 @@
       "at": "2026-11-18T20:19:31.721Z",
       "note": "M19 Claude Desktop verified via the desktop app's own server",
       "commit": "3d8f7a8"
+    },
+    {
+      "at": "2026-11-18T22:58:42.638Z",
+      "note": "M21 Windows support verified (real Codex call on Windows, 56/56 Windows CI)",
+      "commit": "cf2240b"
     }
   ],
-  "updatedAt": "2026-11-18T20:19:31.722Z",
+  "updatedAt": "2026-11-18T22:58:46.554Z",
   "version": "0.1.0"
 }
