@@ -22,6 +22,7 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, delimiter, join } from 'node:path';
+import { isWindows, launchFor } from '@agentbelt/core';
 import { StdioClient } from './mcp-client.js';
 import { currentLink, home, shimPath, stateFile, versionsDir } from './paths.js';
 
@@ -47,25 +48,27 @@ const writeState = (s: InstallState) => {
 export const entryOf = (dir: string) => join(dir, 'node_modules', 'agentbelt', 'dist', 'cli.js');
 
 /** npm-installs `specs` (e.g. "agentbelt@0.1.0" or local .tgz paths) into a new staging folder. */
-export function stage(specs: string[], npm = 'npm'): string {
+export function stage(specs: string[]): string {
   mkdirSync(versionsDir(), { recursive: true });
   const dir = mkdtempSync(join(versionsDir(), '.staging-'));
   writeFileSync(join(dir, 'package.json'), '{ "private": true }\n');
   try {
-    execFileSync(
-      npm,
-      [
-        'install',
-        '--ignore-scripts',
-        '--no-audit',
-        '--no-fund',
-        '--omit=dev',
-        '--prefix',
-        dir,
-        ...specs,
-      ],
-      { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' },
-    );
+    // No shell: on Windows npm is a .cmd wrapper, so this runs `node npm-cli.js` directly.
+    const npm = launchFor('npm', [
+      'install',
+      '--ignore-scripts',
+      '--no-audit',
+      '--no-fund',
+      '--omit=dev',
+      '--prefix',
+      dir,
+      ...specs,
+    ]);
+    execFileSync(npm.file, npm.args, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      encoding: 'utf8',
+      windowsHide: true,
+    });
   } catch (error) {
     rmSync(dir, { recursive: true, force: true });
     const e = error as { stderr?: string; message: string };
@@ -124,8 +127,13 @@ export async function verify(dir: string, node = process.execPath): Promise<stri
   }
 }
 
-/** Points `current` at `target` atomically (a new symlink renamed over the old one). */
+/**
+ * Points `current` at `target` atomically (a new symlink renamed over the old one). Windows needs
+ * admin rights or Developer Mode for symlinks and can't rename over a directory link, so there
+ * the active version is the one named in state.json (itself replaced atomically by a rename).
+ */
 function switchTo(target: string) {
+  if (isWindows) return;
   const tmp = `${currentLink()}.${process.pid}.tmp`;
   rmSync(tmp, { force: true });
   symlinkSync(target, tmp);
@@ -175,11 +183,23 @@ function pruneVersions(state: InstallState) {
 }
 
 export function activeVersion(): string | null {
+  if (isWindows) {
+    const v = readState().current;
+    return v && existsSync(join(versionsDir(), v)) ? v : null;
+  }
   try {
     return basename(readlinkSync(currentLink()));
   } catch {
     return null;
   }
+}
+
+/** The folder of the active version. */
+export function activeDir(): string {
+  if (!isWindows) return currentLink();
+  const v = activeVersion();
+  if (!v) throw new Error('no active version');
+  return join(versionsDir(), v);
 }
 
 /**
@@ -204,13 +224,49 @@ export function stableNode(execPath = process.execPath): string {
   return execPath;
 }
 
-/** The command every client config runs: a shim pointing at the current version. */
-export function writeShim(node = stableNode()): string {
-  const file = shimPath();
+/**
+ * The command every client config runs. On macOS and Linux it is a shell shim pointing at the
+ * current version. Windows apps start servers without a shell, so a .cmd file wouldn't run
+ * there: they run node.exe with a small JavaScript launcher instead.
+ */
+export function serverEntry(node = stableNode()): { command: string; args: string[] } {
+  return isWindows
+    ? { command: node, args: [launcherPath(), 'serve'] }
+    : { command: shimPath(), args: ['serve'] };
+}
+
+const launcherPath = () => join(home(), 'bin', 'agentbelt.mjs');
+
+function writeAtomic(file: string, text: string, mode?: number) {
   mkdirSync(join(file, '..'), { recursive: true });
-  const script = `#!/bin/sh\n# agentbelt shim: runs the active version (see \`agentbelt doctor\`).\nexec ${JSON.stringify(node)} ${JSON.stringify(entryOf(currentLink()))} "$@"\n`;
-  writeFileSync(`${file}.tmp`, script);
-  chmodSync(`${file}.tmp`, 0o755);
+  writeFileSync(`${file}.tmp`, text);
+  if (mode) chmodSync(`${file}.tmp`, mode);
   renameSync(`${file}.tmp`, file);
+}
+
+/** Writes the command(s) clients and people run; returns the one people type. */
+export function writeShim(node = stableNode()): string {
+  if (isWindows) {
+    // Reads state.json at each start, so switching versions needs no rewrite.
+    writeAtomic(
+      launcherPath(),
+      [
+        '// agentbelt launcher: runs the active version (see `agentbelt doctor`).',
+        "import { readFileSync } from 'node:fs';",
+        "import { join } from 'node:path';",
+        "import { pathToFileURL } from 'node:url';",
+        `const home = ${JSON.stringify(home())};`,
+        "const { current } = JSON.parse(readFileSync(join(home, 'state.json'), 'utf8'));",
+        "await import(pathToFileURL(join(home, 'versions', current, 'node_modules', 'agentbelt', 'dist', 'cli.js')).href);",
+        '',
+      ].join('\n'),
+    );
+    const cmd = `${shimPath()}.cmd`;
+    writeAtomic(cmd, `@echo off\r\n"${node}" "${launcherPath()}" %*\r\n`);
+    return cmd;
+  }
+  const file = shimPath();
+  const script = `#!/bin/sh\n# agentbelt shim: runs the active version (see \`agentbelt doctor\`).\nexec ${JSON.stringify(node)} ${JSON.stringify(entryOf(currentLink()))} "$@"\n`;
+  writeAtomic(file, script, 0o755);
   return file;
 }

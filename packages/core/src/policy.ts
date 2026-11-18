@@ -2,10 +2,11 @@
 // (never a shell string): an allowlisted program, a per-program rule over its arguments, and a
 // path check on every argument (lexical, symlink-resolved, and protected directories).
 // Denials are returned to the caller, which records them in the audit log.
-import { existsSync, lstatSync, realpathSync, statSync } from 'node:fs';
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { existsSync, lstatSync, statSync } from 'node:fs';
+import { dirname, isAbsolute, join, parse, relative, resolve, sep } from 'node:path';
 import { spawn } from 'node:child_process';
 import { childEnv } from './env.js';
+import { isWindows, killTree, launchFor, realPath } from './platform.js';
 
 interface Context {
   cwd: string;
@@ -249,9 +250,11 @@ export function inside(root: string, target: string): boolean {
  * dangling symlink.
  */
 function canonical(path: string): string {
-  let current: string = sep;
+  const { root } = parse(path);
+  let current: string = root || sep;
   let missing = false;
-  for (const part of path.split(sep)) {
+  // Windows accepts both separators.
+  for (const part of path.slice(root.length).split(isWindows ? /[\\/]/ : '/')) {
     if (!part || part === '.') continue;
     if (part === '..') {
       current = dirname(current);
@@ -260,7 +263,7 @@ function canonical(path: string): string {
     const next = join(current, part);
     if (!missing) {
       try {
-        current = lstatSync(next).isSymbolicLink() ? realpathSync(next) : next;
+        current = lstatSync(next).isSymbolicLink() ? realPath(next) : next;
         continue;
       } catch (error) {
         if (lstatOk(next)) throw error;
@@ -269,8 +272,35 @@ function canonical(path: string): string {
     }
     current = next;
   }
-  return current;
+  return isWindows ? nativeExisting(current) : current;
 }
+
+/**
+ * On Windows, expands the longest existing prefix to its native spelling, so an 8.3 short name
+ * (GIT~1) or different letter case can't hide which folder a path names.
+ */
+function nativeExisting(path: string): string {
+  let head = path;
+  const tail: string[] = [];
+  while (!lstatOk(head)) {
+    const up = dirname(head);
+    if (up === head) return path;
+    tail.unshift(head.slice(up.length).replace(/^[\\/]/, ''));
+    head = up;
+  }
+  return join(realPath(head), ...tail);
+}
+
+/**
+ * A path component as the file system matches it: letter case is ignored on Windows and macOS,
+ * and Windows also drops trailing dots and spaces and reads `name:stream` as `name`.
+ */
+function fsName(part: string): string {
+  let name = part.toLowerCase();
+  if (isWindows) name = name.split(':')[0].replace(/[. ]+$/, '');
+  return name;
+}
+
 function lstatOk(path: string): boolean {
   try {
     lstatSync(path);
@@ -305,7 +335,7 @@ export function checkPath(root: string, cwd: string, arg: string): string | null
     const rels = [relative(root, real)];
     if (inside(root, lexical)) rels.push(relative(root, lexical));
     for (const rel of rels) {
-      const parts = rel.split(sep);
+      const parts = rel.split(sep).map(fsName);
       if (parts.includes('.git')) return `arguments may not refer to .git: ${arg}`;
       // agentbelt's own state; only task worktrees and saved workflows are reachable.
       if (parts[0] === '.agentbelt' && !['worktrees', 'workflows'].includes(parts[1]))
@@ -325,10 +355,10 @@ export function checkCommand(
   command: string,
   args: string[],
 ): string | null {
-  const rootReal = realpathSync(root);
+  const rootReal = realPath(root);
   let cwdReal: string;
   try {
-    cwdReal = realpathSync(resolve(cwd));
+    cwdReal = realPath(resolve(cwd));
   } catch {
     return `working directory does not exist: ${cwd}`;
   }
@@ -374,10 +404,27 @@ export function runCommand(
 ): Promise<CommandResult> {
   const started = Date.now();
   return new Promise((resolveResult) => {
-    const child = spawn(command, args, {
+    let launch;
+    try {
+      launch = launchFor(command, args, env);
+    } catch (error) {
+      resolveResult({
+        command,
+        args,
+        cwd,
+        exitCode: 127,
+        stdout: '',
+        stderr: (error as Error).message,
+        durationMs: 0,
+      });
+      return;
+    }
+    const child = spawn(launch.file, launch.args, {
       cwd,
       shell: false,
-      detached: true,
+      // Its own process group on macOS/Linux, so a timeout stops everything it started.
+      detached: !isWindows,
+      windowsHide: true,
       stdio: ['ignore', 'pipe', 'pipe'],
       env,
     });
@@ -398,11 +445,7 @@ export function runCommand(
     let settled = false;
     const timers: NodeJS.Timeout[] = [];
     const killGroup = (sig: NodeJS.Signals) => {
-      try {
-        if (child.pid) process.kill(-child.pid, sig);
-      } catch {
-        // Group already gone.
-      }
+      if (child.pid) killTree(child.pid, sig);
     };
     timers.push(
       setTimeout(() => {

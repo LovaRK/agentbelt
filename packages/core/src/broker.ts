@@ -4,19 +4,13 @@
 //                (no .git, no .agentbelt, no symlink escapes)
 //   callTool   → the permission must be granted; the called tool runs with its own plugin's rules
 // Denials throw a BrokerDenied error (shown to the model as a tool error) and are audited.
-import {
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  realpathSync,
-  renameSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import type { AuditLog, Isolation } from './audit.js';
 import { childEnv } from './env.js';
 import type { ModelClient } from './model.js';
 import type { Plugin, PluginContext, ToolResult } from './plugin.js';
+import { realPath } from './platform.js';
 import { checkCommand, checkPath, DEFAULT_COMMAND_TIMEOUT_MS, runCommand } from './policy.js';
 import { redact } from './redact.js';
 
@@ -38,7 +32,7 @@ export interface BrokerDeps {
 export function createContext(plugin: Plugin, deps: BrokerDeps): PluginContext {
   const { audit } = deps;
   // Path checks compare real (symlink-resolved) paths, so the workspace must be one too.
-  const workspace = realpathSync(deps.workspace);
+  const workspace = realPath(deps.workspace);
   const isolation = deps.isolation ?? 'policy-only';
   const perms = plugin.permissions;
   const deny = (detail: string): never => {

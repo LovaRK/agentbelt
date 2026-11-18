@@ -2,9 +2,10 @@
 // an MCP prompt) on the official SDK, and runs each call through the broker and the audit log.
 // The server is bound to one workspace: --workspace, else the client's first root, else the
 // current directory's git repository. It refuses to work on the home directory or /.
-import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { isWindows, realPath } from './platform.js';
 import { homedir } from 'node:os';
-import { dirname, join, resolve, sep } from 'node:path';
+import { dirname, join, parse, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { McpServer } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
@@ -49,14 +50,18 @@ export function checkWorkspace(dir: string): string | null {
   const full = resolve(dir);
   if (!existsSync(full) || !statSync(full).isDirectory()) return `workspace ${full} does not exist`;
   const home = resolve(homedir());
-  if (full === home || full === '/')
+  // Windows paths ignore letter case.
+  const same = (a: string) => (isWindows ? a.toLowerCase() : a);
+  if (same(full) === same(home) || full === parse(full).root)
     return `refusing to use ${full} as the workspace; open a project folder (or pass --workspace)`;
   // An app's own settings folder (e.g. ~/.dsh/profiles/desktop, where DeepSeek Harness starts
-  // servers) is never a project, even though it is neither / nor home.
-  const inHome = full.startsWith(home + sep) ? full.slice(home.length + 1) : null;
+  // servers, or AppData on Windows) is never a project, even though it is neither / nor home.
+  const inHome = same(full).startsWith(same(home + sep)) ? full.slice(home.length + 1) : null;
+  const settings = ['Library', 'AppData'];
   if (
     inHome &&
-    (inHome.startsWith('.') || inHome === 'Library' || inHome.startsWith(`Library${sep}`))
+    (inHome.startsWith('.') ||
+      settings.some((d) => same(inHome) === same(d) || same(inHome).startsWith(same(d + sep))))
   )
     return `refusing to use ${full} as the workspace: it is an app settings folder, not a project (pass --workspace)`;
   return null;
@@ -116,7 +121,7 @@ export function createAgentbeltServer(options: ServerOptions) {
     if (workspace) {
       const problem = checkWorkspace(workspace);
       if (problem) throw new Error(problem);
-      return (workspace = realpathSync(workspace));
+      return (workspace = realPath(workspace));
     }
     let dir = process.cwd();
     if (server.server.getClientCapabilities()?.roots) {
@@ -131,7 +136,7 @@ export function createAgentbeltServer(options: ServerOptions) {
     const root = projectRoot(dir);
     const problem = checkWorkspace(root);
     if (problem) throw new Error(problem);
-    return (workspace = realpathSync(root));
+    return (workspace = realPath(root));
   }
 
   async function invoke(

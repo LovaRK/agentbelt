@@ -34,23 +34,17 @@ import { decide, describe, execute, getRun, listRuns } from '@agentbelt/plugin-w
 import { allAdapters, backup, onPath, type ClientAdapter } from './adapters.js';
 import {
   activate,
+  activeDir,
   activeVersion,
   readState,
+  serverEntry,
   rollback,
   stage,
   verify,
   versionOf,
   writeShim,
 } from './install.js';
-import {
-  currentLink,
-  grantsFile,
-  home,
-  packageDir,
-  pluginsDir,
-  shimPath,
-  skillsDir,
-} from './paths.js';
+import { grantsFile, home, packageDir, pluginsDir, skillsDir } from './paths.js';
 import { FIRST_PARTY } from './plugins.js';
 import { agentCommand, loadAgent } from './agent.js';
 import { scheduleCommand } from './scheduler-cli.js';
@@ -124,14 +118,16 @@ function readdirTgz(dir: string): string[] {
 }
 
 async function connectClients(): Promise<void> {
-  const base = { command: shimPath(), args: ['serve'] };
+  const base = serverEntry();
   const entry = base;
   const found = selectedAdapters().filter((a) => a.detect());
   if (!found.length) {
     say(
       'No supported AI apps found (DeepSeek Harness, Claude Code, Codex, Cursor, VS Code, Claude Desktop, LM Studio, Goose). You can still add',
     );
-    say(`this server to any MCP client: command ${entry.command}, args ["serve"].`);
+    say(
+      `this server to any MCP client: command ${entry.command}, args ${JSON.stringify(entry.args)}.`,
+    );
     return;
   }
   const workspace = flag('--workspace');
@@ -142,7 +138,7 @@ async function connectClients(): Promise<void> {
       continue;
     }
     const entry = a.needsWorkspace
-      ? { ...base, args: ['serve', '--workspace', resolve(workspace!)] }
+      ? { ...base, args: [...base.args, '--workspace', resolve(workspace!)] }
       : base;
     if (a.isInstalled() && !has('--reconnect')) {
       say(`✓ ${a.label}: already connected (run setup --reconnect to rewrite its entry)`);
@@ -183,7 +179,7 @@ async function doctor(): Promise<boolean> {
   if (active) {
     say('• Real tool calls through the installed server (the same command your apps run):');
     try {
-      for (const line of await verify(currentLink())) say(`    ✓ ${line}`);
+      for (const line of await verify(activeDir())) say(`    ✓ ${line}`);
     } catch (error) {
       check(false, `server check failed: ${(error as Error).message}`);
     }

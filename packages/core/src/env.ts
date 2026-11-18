@@ -24,12 +24,29 @@ const PASSTHROUGH = [
   'GIT_AUTHOR_EMAIL',
   'GIT_COMMITTER_NAME',
   'GIT_COMMITTER_EMAIL',
+  // Windows: programs (git, node, npm) fail without these.
+  'SystemRoot',
+  'SYSTEMROOT',
+  'windir',
+  'COMSPEC',
+  'PATHEXT',
+  'TEMP',
+  'TMP',
+  'USERPROFILE',
+  'APPDATA',
+  'LOCALAPPDATA',
+  'ProgramData',
+  'ProgramFiles',
+  'ProgramFiles(x86)',
+  'HOMEDRIVE',
+  'HOMEPATH',
 ];
 
 /** Fixed settings so nothing waits for input or opens an editor or pager. */
 const FIXED = {
   CI: '1',
-  GIT_EDITOR: 'true',
+  // `true` isn't a program on Windows; `git var` treats ':' as "no editor".
+  GIT_EDITOR: process.platform === 'win32' ? ':' : 'true',
   GIT_PAGER: 'cat',
   PAGER: 'cat',
   GIT_TERMINAL_PROMPT: '0',
