@@ -2,10 +2,11 @@
 // say exactly what will change. Claude Code and Codex are changed through their own `mcp`
 // commands; DeepSeek Harness has no such command, so a clearly marked block is added to its
 // profile patch file. Each config file is backed up before it is changed.
-import { execFileSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { basename, delimiter, dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
+import { findOnPath, isWindows } from '@agentbelt/core';
 import { backupsDir } from './paths.js';
 
 export interface Entry {
@@ -35,24 +36,33 @@ export interface ClientAdapter {
   remove(): void;
 }
 
-export function onPath(name: string): string | null {
-  for (const dir of (process.env.PATH ?? '').split(delimiter)) {
-    const full = join(dir, name);
-    if (dir && existsSync(full)) return full;
-  }
-  return null;
-}
+export const onPath = (name: string): string | null => findOnPath(name);
 
 function run(cmd: string, args: string[]): { ok: boolean; out: string } {
-  try {
-    return {
-      ok: true,
-      out: execFileSync(cmd, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }),
-    };
-  } catch (error) {
-    const e = error as { stdout?: string; stderr?: string; message: string };
-    return { ok: false, out: `${e.stdout ?? ''}${e.stderr ?? e.message}` };
+  let file: string | null = isWindows ? findOnPath(cmd) : cmd;
+  let argv = args;
+  let verbatim = false;
+  if (!file) return { ok: false, out: `${cmd} was not found on PATH` };
+  if (isWindows && /\.(cmd|bat)$/i.test(file)) {
+    // An npm-installed app on Windows is a .cmd file, which only cmd.exe can start. cmd.exe
+    // re-parses its command line, so refuse anything it could read as more than plain text.
+    const words = [file, ...args];
+    if (words.some((w) => /["%!^&|<>\r\n]/.test(w)))
+      return { ok: false, out: `can't pass ${words.join(' ')} through cmd.exe safely` };
+    // Quote only words with spaces (an npm shim passes them on to node unchanged).
+    const quote = (w: string) => (/\s/.test(w) || !w ? `"${w}"` : w);
+    argv = ['/d', '/s', '/c', `"${words.map(quote).join(' ')}"`];
+    file = process.env.COMSPEC ?? 'cmd.exe';
+    verbatim = true;
   }
+  const r = spawnSync(file, argv, {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    windowsHide: true,
+    windowsVerbatimArguments: verbatim,
+  });
+  if (r.status === 0) return { ok: true, out: r.stdout };
+  return { ok: false, out: `${r.stdout ?? ''}${r.stderr || r.error?.message || ''}` };
 }
 
 /** Copies a config file into the backups folder; returns the copy's path. */
@@ -125,14 +135,20 @@ export function claudeCode(home = homedir()): ClientAdapter {
       `run: claude mcp add-json --scope user agentbelt '${JSON.stringify({ type: 'stdio', ...e })}'`,
     add(e) {
       run('claude', ['mcp', 'remove', '--scope', 'user', 'agentbelt']);
-      const r = run('claude', [
-        'mcp',
-        'add-json',
-        '--scope',
-        'user',
-        'agentbelt',
-        JSON.stringify({ type: 'stdio', ...e }),
-      ]);
+      // On Windows, JSON (with its quotes) can't go through cmd.exe to an npm-installed claude.cmd.
+      const r = run(
+        'claude',
+        isWindows
+          ? ['mcp', 'add', '--scope', 'user', 'agentbelt', '--', e.command, ...e.args]
+          : [
+              'mcp',
+              'add-json',
+              '--scope',
+              'user',
+              'agentbelt',
+              JSON.stringify({ type: 'stdio', ...e }),
+            ],
+      );
       if (!r.ok) throw new Error(`claude mcp add-json failed: ${r.out.trim()}`);
     },
     remove() {

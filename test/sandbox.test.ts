@@ -1,7 +1,6 @@
 // Third-party plugin isolation, with a deliberately malicious plugin package.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -16,7 +15,7 @@ import {
   stagePlugin,
   type Plugin,
 } from '@agentbelt/core';
-import { tempRepo } from './helpers.ts';
+import { npmSync, tempRepo } from './helpers.ts';
 
 let dir = '';
 let tgz = '';
@@ -72,7 +71,7 @@ export default {
   ],
 };`,
   );
-  execFileSync('npm', ['pack', '--pack-destination', dir], { cwd: pkg, stdio: 'ignore' });
+  npmSync(['pack', '--pack-destination', dir], { cwd: pkg, stdio: 'ignore' });
   tgz = join(dir, 'agentbelt-plugin-evil-1.0.0.tgz');
 });
 after(() => rmSync(dir, { recursive: true, force: true }));

@@ -16,14 +16,17 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { basename, join } from 'node:path';
+import { basename, delimiter, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deepseek } from '../packages/cli/src/adapters.ts';
+import { findOnPath } from '@agentbelt/core';
+import { npmSync } from './helpers.ts';
+
+const win = process.platform === 'win32';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const V: string = JSON.parse(readFileSync(join(root, 'packages/cli/package.json'), 'utf8')).version;
 let dir = '';
-const which = (b: string) => execFileSync('which', [b], { encoding: 'utf8' }).trim();
 const pkgs = (v: string) => join(dir, `pkgs-${v}`);
 
 function cli(args: string[]) {
@@ -32,14 +35,40 @@ function cli(args: string[]) {
     encoding: 'utf8',
     env: {
       HOME: join(dir, 'home'),
-      PATH: `${join(dir, 'bin')}:/usr/bin:/bin`,
+      // Fake claude/codex first; then only node and git (on Windows also the system folder).
+      PATH: [
+        join(dir, 'bin'),
+        ...(win
+          ? [
+              dirname(process.execPath),
+              dirname(findOnPath('git')!),
+              `${process.env.SystemRoot}\\System32`,
+            ]
+          : ['/usr/bin', '/bin']),
+      ].join(delimiter),
       AGENTBELT_HOME: join(dir, 'home', '.local', 'share', 'agentbelt'),
+      ...(win
+        ? {
+            // os.homedir() and the app-settings folder come from these on Windows.
+            USERPROFILE: join(dir, 'home'),
+            APPDATA: join(dir, 'home', 'AppData', 'Roaming'),
+            LOCALAPPDATA: join(dir, 'home', 'AppData', 'Local'),
+            SystemRoot: process.env.SystemRoot,
+            PATHEXT: process.env.PATHEXT,
+            TEMP: process.env.TEMP,
+            TMP: process.env.TMP,
+          }
+        : {}),
     },
   });
   return { code: r.status, out: `${r.stdout}${r.stderr}` };
 }
+const agentbeltHome = () => join(dir, 'home', '.local', 'share', 'agentbelt');
+/** The active version: the `current` link on macOS/Linux, state.json on Windows. */
 const active = () =>
-  basename(readlinkSync(join(dir, 'home', '.local', 'share', 'agentbelt', 'current')));
+  win
+    ? JSON.parse(readFileSync(join(agentbeltHome(), 'state.json'), 'utf8')).current
+    : basename(readlinkSync(join(agentbeltHome(), 'current')));
 
 /** A copy of the packed packages with the CLI package changed to `version` (optionally broken). */
 function variant(version: string, broken = false) {
@@ -47,7 +76,8 @@ function variant(version: string, broken = false) {
   cpSync(pkgs(V), out, { recursive: true });
   const work = join(dir, `unpack-${version}`);
   mkdirSync(work);
-  execFileSync('tar', ['-xzf', join(out, `agentbelt-${V}.tgz`), '-C', work]);
+  // Relative paths: some Windows tar builds read `D:\\…` as a remote host.
+  execFileSync('tar', ['-xzf', `agentbelt-${V}.tgz`, '-C', relative(out, work)], { cwd: out });
   const pj = join(work, 'package', 'package.json');
   writeFileSync(
     pj,
@@ -61,11 +91,13 @@ function variant(version: string, broken = false) {
     );
   }
   rmSync(join(out, `agentbelt-${V}.tgz`));
-  execFileSync('tar', ['-czf', join(out, `agentbelt-${version}.tgz`), '-C', work, 'package']);
+  execFileSync('tar', ['-czf', `agentbelt-${version}.tgz`, '-C', relative(out, work), 'package'], {
+    cwd: out,
+  });
 }
 
 before(() => {
-  execFileSync('npm', ['run', 'build'], { cwd: root, stdio: 'ignore' });
+  npmSync(['run', 'build'], { cwd: root, stdio: 'ignore' });
   dir = mkdtempSync(join(tmpdir(), 'agentbelt-install-'));
   mkdirSync(pkgs(V));
   for (const w of [
@@ -77,17 +109,34 @@ before(() => {
     'plugins/agent',
     'packages/cli',
   ])
-    execFileSync('npm', ['pack', '--pack-destination', pkgs(V)], {
+    npmSync(['pack', '--pack-destination', pkgs(V)], {
       cwd: join(root, w),
       stdio: 'ignore',
     });
   variant('9.0.1');
   variant('9.0.2', true);
   mkdirSync(join(dir, 'bin'));
-  for (const b of ['node', 'npm', 'git']) symlinkSync(which(b), join(dir, 'bin', b));
+  if (!win)
+    for (const b of ['node', 'npm', 'git']) symlinkSync(findOnPath(b)!, join(dir, 'bin', b));
   for (const c of ['claude', 'codex']) {
-    const f = join(dir, 'bin', c);
     // Fake client CLI: records calls; `mcp get` succeeds once `mcp add…` was called.
+    if (win) {
+      const on = join(dir, `${c}.on`);
+      writeFileSync(
+        join(dir, 'bin', `${c}.cmd`),
+        [
+          '@echo off',
+          `>>"${join(dir, 'calls.log')}" echo ${c} %*`,
+          `if "%~1 %~2"=="mcp add" type nul > "${on}"`,
+          `if "%~1 %~2"=="mcp remove" if exist "${on}" del "${on}"`,
+          `if "%~1 %~2"=="mcp get" if not exist "${on}" exit /b 1`,
+          'exit /b 0',
+          '',
+        ].join('\r\n'),
+      );
+      continue;
+    }
+    const f = join(dir, 'bin', c);
     writeFileSync(
       f,
       `#!/bin/sh\necho "${c} $*" >> "${dir}/calls.log"\ncase "$*" in\n  "mcp add"*) touch "${dir}/${c}.on";;\n  "mcp remove"*) rm -f "${dir}/${c}.on";;\n  "mcp get"*) [ -f "${dir}/${c}.on" ] || exit 1;;\nesac\nexit 0\n`,
@@ -109,8 +158,17 @@ test('setup installs a verified copy, connects all three clients, and doctor pas
   assert.match(r.out, /✓ testing_detect ok/);
   assert.equal(active(), V);
   const calls = readFileSync(join(dir, 'calls.log'), 'utf8');
-  assert.match(calls, /claude mcp add-json --scope user agentbelt .*"args":\["serve"\]/);
-  assert.match(calls, /codex mcp add agentbelt -- .*\/bin\/agentbelt serve/);
+  if (win) {
+    // Windows apps run node.exe with the JavaScript launcher (no shell, so no .cmd).
+    assert.match(
+      calls,
+      /claude mcp add --scope user agentbelt -- .*node\.exe .*agentbelt\.mjs serve/i,
+    );
+    assert.match(calls, /codex mcp add agentbelt -- .*node\.exe .*agentbelt\.mjs serve/i);
+  } else {
+    assert.match(calls, /claude mcp add-json --scope user agentbelt .*"args":\["serve"\]/);
+    assert.match(calls, /codex mcp add agentbelt -- .*\/bin\/agentbelt serve/);
+  }
   const patch = readFileSync(
     join(dir, 'home', '.dsh', 'profiles', 'desktop', 'cordis.patch.yml'),
     'utf8',

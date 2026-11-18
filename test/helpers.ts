@@ -1,4 +1,5 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, type ExecFileSyncOptions } from 'node:child_process';
+import { launchFor } from '@agentbelt/core';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -29,4 +30,10 @@ export function tempRepo(scripts: Record<string, string> = { test: 'node check.j
   git('add', '-A');
   git('commit', '-q', '-m', 'init');
   return { dir, git, cleanup: () => rmSync(dir, { recursive: true, force: true }) };
+}
+
+/** Runs npm without a shell (on Windows npm is a .cmd file, so this runs node npm-cli.js). */
+export function npmSync(args: string[], options: ExecFileSyncOptions = {}) {
+  const npm = launchFor('npm', args);
+  return execFileSync(npm.file, npm.args, options);
 }

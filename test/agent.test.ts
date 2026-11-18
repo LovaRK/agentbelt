@@ -312,7 +312,8 @@ test('agentbelt agent setup: remote needs opt-in; config is private and holds no
 
     cli(['setup', '--provider', 'local', '--model', 'qwen-coder', '--yes']);
     const file = join(home, 'agent-model.json');
-    assert.equal(statSync(file).mode & 0o777, 0o600);
+    // Windows has no POSIX modes; the file sits in the user's own profile folder.
+    if (process.platform !== 'win32') assert.equal(statSync(file).mode & 0o777, 0o600);
     const config = JSON.parse(readFileSync(file, 'utf8'));
     assert.deepEqual(config, {
       provider: 'local',
