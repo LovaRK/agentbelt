@@ -1,7 +1,7 @@
 name: ci
 on:
   push:
-    branches: [main]
+    branches: [main, windows-support]
   pull_request:
 permissions:
   contents: read
@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
         node: [22, 24]
     runs-on: ${{ matrix.os }}
     steps:
@@ -34,7 +34,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run format:check
       - run: npm run build
-      # Both runners have an OS sandbox, so the real isolation tests must run (not skip).
+      # macOS and Linux have an OS sandbox, so the real isolation tests must run (not skip there).
+      # Windows has no supported sandbox backend: third-party plugins are refused (fail closed).
       - run: npm test
         env:
-          AGENTBELT_REQUIRE_SANDBOX: '1'
+          AGENTBELT_REQUIRE_SANDBOX: ${{ runner.os == 'Windows' && '0' || '1' }}
