@@ -500,6 +500,13 @@
       "title": "Project state",
       "decision": "single JSON source (.agentbelt/project.json) with lock + atomic writes + backup; Markdown views generated; MASTER_PLAN.md human-owned",
       "why": "continuity across agents and sessions"
+    },
+    {
+      "id": "D6",
+      "date": "2026-11-18",
+      "title": "Release 0.3.3",
+      "decision": "Published 0.3.3 to npm via trusted publishing (OIDC), no stored npm token",
+      "why": "Release run https://github.com/LovaRK/agentbelt/actions/runs/44360360027 attempt 3 succeeded 2026-11-18; all 7 packages at 0.3.3 with SLSA provenance; clean npx agentbelt@0.3.3 install reports 0.3.3. 0.3.2 was tagged but never published."
     }
   ],
   "blockers": [
@@ -533,8 +540,13 @@
       "at": "2026-11-12T20:54:53.956Z",
       "note": "Project control system added and verified; M10 waits for the user's DeepSeek prompt",
       "commit": "faf725d"
+    },
+    {
+      "at": "2026-11-18T20:07:02.352Z",
+      "note": "0.3.3 published to npm via trusted publishing; clean install verified",
+      "commit": "d707be2"
     }
   ],
-  "updatedAt": "2026-11-18T17:09:49.391Z",
+  "updatedAt": "2026-11-18T20:07:02.352Z",
   "version": "0.1.0"
 }

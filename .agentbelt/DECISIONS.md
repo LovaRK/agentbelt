@@ -29,3 +29,9 @@ Why: privacy and cost
 single JSON source (.agentbelt/project.json) with lock + atomic writes + backup; Markdown views generated; MASTER_PLAN.md human-owned
 
 Why: continuity across agents and sessions
+
+## D6 Release 0.3.3 (2026-11-18)
+
+Published 0.3.3 to npm via trusted publishing (OIDC), no stored npm token
+
+Why: Release run https://github.com/LovaRK/agentbelt/actions/runs/44360360027 attempt 3 succeeded 2026-11-18; all 7 packages at 0.3.3 with SLSA provenance; clean npx agentbelt@0.3.3 install reports 0.3.3. 0.3.2 was tagged but never published.
