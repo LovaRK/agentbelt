@@ -1,7 +1,7 @@
 {
   "name": "agentbelt",
   "mcpName": "io.github.LovaRK/agentbelt",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "One install, every AI agent: safe git, testing and workflow tools for DeepSeek Harness, Claude Code, Codex and any MCP client",
   "license": "Apache-2.0",
   "repository": {
@@ -38,12 +38,12 @@
     "workflows"
   ],
   "dependencies": {
-    "@agentbelt/core": "0.3.1",
-    "@agentbelt/plugin-git": "0.3.1",
-    "@agentbelt/plugin-testing": "0.3.1",
-    "@agentbelt/plugin-workflows": "0.3.1",
-    "@agentbelt/plugin-agent": "0.3.1",
-    "@agentbelt/plugin-tokens": "0.3.1"
+    "@agentbelt/core": "0.3.2",
+    "@agentbelt/plugin-git": "0.3.2",
+    "@agentbelt/plugin-testing": "0.3.2",
+    "@agentbelt/plugin-workflows": "0.3.2",
+    "@agentbelt/plugin-agent": "0.3.2",
+    "@agentbelt/plugin-tokens": "0.3.2"
   },
   "engines": {
     "node": ">=22.13"
