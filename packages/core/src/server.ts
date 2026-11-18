@@ -57,11 +57,14 @@ export function checkWorkspace(dir: string): string | null {
   // An app's own settings folder (e.g. ~/.dsh/profiles/desktop, where DeepSeek Harness starts
   // servers, or AppData on Windows) is never a project, even though it is neither / nor home.
   const inHome = same(full).startsWith(same(home + sep)) ? full.slice(home.length + 1) : null;
-  const settings = ['Library', 'AppData'];
+  const under = (d: string) =>
+    !!inHome && (same(inHome) === same(d) || same(inHome).startsWith(same(d + sep)));
   if (
     inHome &&
     (inHome.startsWith('.') ||
-      settings.some((d) => same(inHome) === same(d) || same(inHome).startsWith(same(d + sep))))
+      under('Library') ||
+      // Windows apps keep settings in AppData; the temp folder is in there too, and is allowed.
+      (isWindows && under('AppData') && !under(join('AppData', 'Local', 'Temp'))))
   )
     return `refusing to use ${full} as the workspace: it is an app settings folder, not a project (pass --workspace)`;
   return null;

@@ -1,10 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { homedir } from 'node:os';
-import { existsSync, readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as z from 'zod';
-import { checkWorkspace, createAgentbeltServer, definePlugin, ok } from '@agentbelt/core';
+import { checkWorkspace, createAgentbeltServer, definePlugin, ok, realPath } from '@agentbelt/core';
 import { tempRepo } from './helpers.ts';
 
 const probe = definePlugin({
@@ -159,7 +159,15 @@ test('an unexpanded ${…} workspace (Cursor with no folder open) falls back to 
     });
     const r = await invoke('probe_run', { program: 'git', args: ['rev-parse', '--show-toplevel'] });
     assert.equal(r.isError ?? false, false, r.text);
-    assert.match(r.text, new RegExp(realpathSync(repo.dir).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    // git prints forward slashes on Windows; letter case and 8.3 names come from the native path.
+    const want = realPath(repo.dir).replaceAll('\\', '/');
+    assert.match(
+      r.text.replaceAll('\\', '/'),
+      new RegExp(
+        want.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+        process.platform === 'win32' ? 'i' : '',
+      ),
+    );
   } finally {
     process.chdir(before);
     repo.cleanup();
